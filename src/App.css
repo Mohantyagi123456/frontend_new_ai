@@ -1,0 +1,85 @@
+.custom-margin {
+  margin-top: 20px;
+}
+
+.brokerlogin_card {
+  margin-top: 30px;
+}
+
+li.euiPagination__item {
+  list-style: none;
+}
+
+.euiFormLabel {
+  font-size: 15px;
+  /* font-size: small; */
+  line-height: 3.142857rem;
+  overflow-wrap: break-word !important;
+  word-break: break-word;
+  color: black;
+  font-weight: 600;
+  display: inline-block;
+  transition: all 154ms cubic-bezier(0.694, 0.0482, 0.335, 1);
+}
+
+.success {
+  color: #fbfcfd !important;
+  background-color: green !important;
+  box-shadow: inset 0 0 0 0px #fff !important;
+}
+.danger {
+  color: #fbfcfd !important;
+  background-color: #f53333 !important;
+  box-shadow: inset 0 0 0 0px #fff !important;
+}
+tbody.css-0 {
+  font-size: smaller;
+}
+.euiCheckbox.euiCheckbox--noLabel .euiCheckbox__input, .euiCheckbox.euiCheckbox--noLabel .euiCheckbox__square {
+  background-color: white !important;
+}
+.modalUpdate{
+    min-inline-size: 550px !important;
+}
+.moadlHeading{
+  font-size: large !important;
+  font-weight: 600 !important;
+  color: #b4b7be !important;
+
+}
+.inputClass{
+  /* margin-left: 140px; */
+  margin-top: 10px;
+  height: 30px !important;
+  width: 65% !important;
+}
+.checkk{
+  margin-left: 10px !important;
+}
+
+.forafterlogin{
+  margin-top: 10px;
+  width: 270px !important;
+    height: 30px !important;
+}
+.copyClass {
+  /* Simplified margin adjustments */
+  margin-top: -21px;
+  margin-left: 250px;
+  /* Check if other styles are necessary */
+}
+
+.euiComboBox__inputWrap.euiFormControlLayout--1icons.euiComboBox__inputWrap--plainText {
+  background: white;
+}
+/* .euiComboBox__inputWrap.euiFormControlLayout--2icons {
+  background: white;
+} */
+
+/* .euiFormControlLayout--fullWidth {
+  max-width: 25%;
+} */
+.euiComboBox__inputWrap.euiFormControlLayout--1icons {
+  background-color: white;
+  border: 1px solid;
+}
