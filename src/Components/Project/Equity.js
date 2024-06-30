@@ -11,7 +11,7 @@ const EquityMain = (userData) => {
   console.log("userDatajhkjl",userData?.userData)
   return(
     <EuiText>
-    <h2>Equity Data Table</h2>
+    <h2>Equity Analysis</h2>
     <div style={{ marginTop: "50px" }}><EquityDataGridTable userData={userData?.userData}/></div>
    
   </EuiText>
@@ -20,7 +20,7 @@ const EquityMain = (userData) => {
 
 const BlinkTradeEquity = (userData) => (
   <EuiText>
-  <h2>Equity Data Table</h2>
+  <h2>Equity Analysis</h2>
    <div style={{ marginTop: "50px" }}><EquityDataGridTable userData={userData?.userData}/></div>
   </EuiText>
 );

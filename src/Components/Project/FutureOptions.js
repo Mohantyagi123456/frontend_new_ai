@@ -8,7 +8,7 @@ import FutureStrategyGenerate from './Future/FutureStrategyGenerate';
 const FutureOptionsMain = (userData) => {
   return (
     <EuiText>
-      <h2>F&O Data Table</h2>
+      <h2>F&O Analysis</h2>
       <FutureStrategyGenerate/>
       <div style={{ marginTop: "50px" }}><FutureDataGridTable userData={userData?.userData} /></div>
 

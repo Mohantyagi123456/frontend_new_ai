@@ -53,7 +53,7 @@ const EquityOrders = (orderData) => {
 
   return (
     <EuiText>
-      <h2>Equity Orders Table</h2>
+      <h2>Equity Orders</h2>
       <div style={{ marginTop: "50px" }}>
         <EquityOrderDataGridTable orderData={orderData?.orderData} />
       </div>

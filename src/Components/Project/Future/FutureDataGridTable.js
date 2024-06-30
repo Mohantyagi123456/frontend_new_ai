@@ -5,10 +5,13 @@ import {
     EuiFieldSearch,
     EuiFlexGroup,
     EuiFlexItem,
+    EuiButtonIcon,
+    EuiSelect,
     EuiSpacer,
     EuiLink
 } from '@elastic/eui';
 import { useNavigate } from 'react-router-dom';
+import { render } from '@testing-library/react';
 
 const FutureDataGridTable = ({ userData }) => {
     const navigate = useNavigate();
@@ -19,20 +22,40 @@ const FutureDataGridTable = ({ userData }) => {
     }));
     const [pageIndex, setPageIndex] = useState(0);
     const [pageSize, setPageSize] = useState(10);
+    const [selectedSymbols, setSelectedSymbols] = useState({});
     const [sortField, setSortField] = useState('name');
     const [sortDirection, setSortDirection] = useState('asc');
     const [searchValue, setSearchValue] = useState('');
-    const [nestedTable,SetNestedTable] = useState(false)
-    
-    const [selectedItems, setSelectedItems] = useState([]); // New state for selected items
+    const [nestedTable, SetNestedTable] = useState(false)
 
+    const [selectedItems, setSelectedItems] = useState([]); // New state for selected items
+    console.log("selectedSymbols", selectedSymbols)
     const HandleOpenRecord = (dataItem) => {
         console.log("Clicked item data:", dataItem);
         const kk = dataItem.details
         navigate("strategy", { state: { kk } })
-       
+
     };
 
+    const Strategynames = [
+        'SOB4d', 'SOB2d4d', 'SOS2d4d', 'SOS4d', 'NiftyFuture1d2d', 'NiftyFuture2d2d',
+        'BankNiftyFuture1d2d', 'BankNiftyFuture2d2d', 'StocksFuture2d3d', 'StocksFuture3d3d',
+        'StocksFuture4dWeekly', 'GoldMiniFuture2d3d', 'GoldMiniFuture3d3d',
+        'SilverMiniFuture2d3d', 'SilverMiniFuture3d3d'
+    ];
+
+    const Strategy = Strategynames.map(name => ({
+        Strategynames: Strategynames,
+
+    }));
+  const [watchListData,setWatchListData] = useState([])
+  console.log("watchListData",watchListData)
+
+    const updateOrderDetails = (user) => {
+        const details = user?.details
+            setWatchListData(details[selectedSymbols.name])
+
+    }
     const columns = [
         {
             field: 'name',
@@ -51,7 +74,41 @@ const FutureDataGridTable = ({ userData }) => {
                     </span>
                 ),
             },
+        },
+        {
+            field: 'name',
+            name: 'Strategy Name',
+            render: (name, item) => {
+
+                const options = [
+                    { value: '', text: 'Select an strategy' }, // EuiSelect requires value and text properties
+                    ...Object.keys(item.details).map(key => ({ value: key, text: key }))
+                ];
+
+                return (
+                    <EuiSelect
+                        className="selectableoption"
+                        value={selectedSymbols[name]}
+                        onChange={(e) => setSelectedSymbols(prev => ({ "name": e.target.value }))}
+                        options={options}
+                    />
+                );
+            },
+
+        },
+
+        {
+            field: '',
+            name: 'Add to Watchlist',
+            truncateText: true,
+            render: (user) => {
+                return <EuiButtonIcon display="base" onClick={() => updateOrderDetails(user)} iconType="plus" size="xs" aria-label="Next" />
+            }
         }
+       
+
+
+
     ];
 
     const handleSearchChange = (e) => {

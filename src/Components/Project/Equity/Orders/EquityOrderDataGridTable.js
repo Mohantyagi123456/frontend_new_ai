@@ -14,6 +14,7 @@ import {
     EuiButton,
     EuiForm,
     EuiFieldText,
+    EuiDatePicker,
     EuiButtonEmpty,
     EuiModal,
     EuiBadge,
@@ -24,14 +25,18 @@ import {
     EuiModalHeaderTitle,
     EuiOverlayMask,
 } from '@elastic/eui';
+import moment from 'moment';
 import EquityOrderModalComponent from './EquityOrderModalComponent';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const EquityOrderDataGridTable = ({ orderData }) => {
+    const navigate = useNavigate();
     const [pageIndex, setPageIndex] = useState(0);
     const [pageSize, setPageSize] = useState(10);
     const [sortField, setSortField] = useState('trading_symbol');
     const [sortDirection, setSortDirection] = useState('asc');
     const [searchValue, setSearchValue] = useState('');
+    const [gtdDate,setGtdDate] = useState(moment())
     const [filterOption, setFilterOption] = useState({
         current_status: '',
         previous_status: '',
@@ -114,7 +119,7 @@ const EquityOrderDataGridTable = ({ orderData }) => {
             },
         },
         {
-            field: 'order_type',
+            field: 'name',
             name: 'Order Type',
             truncateText: true,
             sortable: true,
@@ -182,15 +187,21 @@ const EquityOrderDataGridTable = ({ orderData }) => {
     };
 
     const ByVersion = [
+        { text: 'All', value: '' },
         { text: 'DCC', value: 'DCC' },
         { text: 'WCC', value: 'WCC' },
         { text: 'MCC', value: 'MCC' }
     ];
-    const ByPreviousStatus = [
-        { text: 'bull_cf', value: 'bull_cf' },
-        { text: 'bear_cf', value: 'bear_cf' },
-        { text: 'bull', value: 'bull' },
-        { text: 'bear', value: 'bear' },
+    const ByOrderType = [
+        { text: 'All', value: '' },
+        { text: 'Entry', value: 'Entry' },
+        { text: 'Target 1', value: 'Target 1' },
+        { text: 'Target 2', value: 'Target 2' },
+        { text: 'Target 3', value: 'Target 3' },
+        { text: 'Target 4', value: 'Target 4' },
+        { text: 'Target 5', value: 'Target 5' },
+        { text: 'SL', value: 'SL' }
+       
     ];
 
     const ByIsChanged = [
@@ -215,6 +226,9 @@ const EquityOrderDataGridTable = ({ orderData }) => {
 
         if (filterOption.version) {
             items = items.filter((user) => user.version === filterOption.version);
+        }
+        if (filterOption.name) {
+            items = items.filter((user) => user.name === filterOption.name);
         }
 
         const startIndex = pageIndex * pageSize;
@@ -304,7 +318,7 @@ const EquityOrderDataGridTable = ({ orderData }) => {
                 "ExecQty": "",
                 "ExecPrice": "",
                 "OrderValue": "",
-                "GTDDate": ""
+                "GTDDate": gtdDate
             })
             );
 
@@ -336,7 +350,11 @@ const EquityOrderDataGridTable = ({ orderData }) => {
             handleExportCSV()
         }
     }
-    console.log("selectedItemsselectedItems", selectedItems)
+    const AddtoWatchlist = ()=>{
+        console.log("selectedItemsselectedItems", selectedItems)
+        navigate('/watch-list', { state: { selectedItems ,form:"equityOrders"} });
+    }
+
 
 
     return (
@@ -352,7 +370,13 @@ const EquityOrderDataGridTable = ({ orderData }) => {
                 </EuiFlexItem>
 
                 <div style={{ marginLeft: "50%", display: "flex", marginTop: "5px" }}>
+                <EuiFlexItem grow={false} style={{ fontWeight: "700" }} onClick={() => selectedItems.length != 0 ? AddtoWatchlist() : ""}>
+                        <EuiBadge color="success" isDisabled={selectedItems.length != 0 ? false : true}>
+                            <EuiIcon type="plus" /> &nbsp;Add to Watchlist
+                        </EuiBadge>
 
+                    </EuiFlexItem>
+                    &nbsp; &nbsp;
                     <EuiFlexItem grow={false} style={{ fontWeight: "700" }} onClick={() => selectedItems.length != 0 ? openExportModal() : ""}>
                         <EuiBadge color="subdued" isDisabled={selectedItems.length != 0 ? false : true}>
                             <EuiIcon type="download" /> &nbsp;Download Files
@@ -401,6 +425,14 @@ const EquityOrderDataGridTable = ({ orderData }) => {
                                             onChange={handleFilterChange}
                                         />
                                     </EuiFormRow>
+                                    <EuiFormRow label="Filter by OrderType">
+                                        <EuiSelect
+                                            name="name"
+                                            options={ByOrderType}
+                                            value={filterOption.name}
+                                            onChange={handleFilterChange}
+                                        />
+                                    </EuiFormRow>
                                 </EuiFlexItem>
                             </EuiFlexGroup>
                         </EuiModalBody>
@@ -430,6 +462,12 @@ const EquityOrderDataGridTable = ({ orderData }) => {
                                         name="customerId"
                                         value={customerIdData}
                                         onChange={(e) => setCustomerIdData(e.target.value)}
+                                    />
+                                </EuiFormRow>
+                                <EuiFormRow label="Select Date">
+                                    <EuiDatePicker
+                                        selected={gtdDate}
+                                        onChange={date => setGtdDate(date ? moment(date) : null)}
                                     />
                                 </EuiFormRow>
                             </EuiForm>

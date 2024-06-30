@@ -40,7 +40,7 @@ const NestedRoutesFuture = () => {
 const FutureOptionsOrders = (orderData) => {
   return (
     <EuiText>
-      <h2>F&O Orders Table</h2>
+      <h2>F&O Orders</h2>
       <div style={{ marginTop: "50px" }}>
         <FutureOrderDataGridTable orderData={orderData?.orderData} />
       </div>

@@ -27,8 +27,10 @@ import {
 } from '@elastic/eui';
 import moment from 'moment';
 import FutureOrderModalComponent from './FutureOrderModalComponent';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const FutureOrderDataGridTable = ({ orderData }) => {
+    const navigate = useNavigate();
     console.log("orderDataorderData", orderData)
     const [pageIndex, setPageIndex] = useState(0);
     const [pageSize, setPageSize] = useState(10);
@@ -225,6 +227,7 @@ const FutureOrderDataGridTable = ({ orderData }) => {
     };
 
     const ByOrderType = [
+        { text: 'All', value: 'all' },
         { text: 'Target 1', value: 'target_1' },
         { text: 'Target 2', value: 'target_2' },
         { text: 'Target 3', value: 'target_3' },
@@ -233,6 +236,7 @@ const FutureOrderDataGridTable = ({ orderData }) => {
         { text: 'Entry', value: 'entry' }
     ];
     const ByStrategyName = [
+        { text: 'All', value: 'all' },
         { text: 'SOS4d', value: 'SOS4d' },
         { text: 'BankNiftyFuture1d2d', value: 'BankNiftyFuture1d2d' },
         { text: 'StocksFuture2d3d', value: 'StocksFuture2d3d' },
@@ -409,7 +413,10 @@ const FutureOrderDataGridTable = ({ orderData }) => {
             handleExportCSV()
         }
     }
-    console.log("selectedItemsselectedItems", selectedItems)
+    const AddtoWatchlist = ()=>{
+        console.log("selectedItemsselectedItems", selectedItems)
+        navigate('/watch-list', { state: { selectedItems ,form:"futureOrders"} });
+    }
 
 
     return (
@@ -425,7 +432,13 @@ const FutureOrderDataGridTable = ({ orderData }) => {
                 </EuiFlexItem>
 
                 <div style={{ marginLeft: "50%", display: "flex", marginTop: "5px" }}>
+                <EuiFlexItem grow={false} style={{ fontWeight: "700" }} onClick={() => selectedItems.length != 0 ? AddtoWatchlist() : ""}>
+                        <EuiBadge color="success" isDisabled={selectedItems.length != 0 ? false : true}>
+                            <EuiIcon type="plus" /> &nbsp;Add to Watchlist
+                        </EuiBadge>
 
+                    </EuiFlexItem>
+                    &nbsp; &nbsp;
                     <EuiFlexItem grow={false} style={{ fontWeight: "700" }} onClick={() => selectedItems.length != 0 ? openExportModal() : ""}>
                         <EuiBadge color="subdued" isDisabled={selectedItems.length != 0 ? false : true}>
                             <EuiIcon type="download" /> &nbsp;Download Files

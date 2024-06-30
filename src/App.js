@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import '@elastic/eui/dist/eui_theme_light.css';
 import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 import '@elastic/eui/dist/eui_theme_dark.css'; // Import dark theme CSS
-import { EuiProvider, EuiIcon, EuiSideNav } from '@elastic/eui';
+import { EuiProvider, EuiIcon, EuiSideNav, BACKGROUND_COLORS } from '@elastic/eui';
 import HeaderUpdates from './Components/Layout/HeaderUpdates';
 import Sidebar from './Components/Layout/Sidebar';
 import './App.css';
@@ -18,7 +18,9 @@ const App = () => {
     'Authorization': `Bearer ${KiteId?.access}`
   };
 
-  console.log("hjkhjhkhk", window.location.pathname)
+  const theme = localStorage.getItem("theme")
+  console.log("themethemethemetheme", theme)
+
   const protectedroute = JSON.parse(localStorage.getItem('login'));
   const doNotCall = JSON.parse(localStorage.getItem('donotCallApi'));
   const [colorMode, setColorMode] = useState('light');
@@ -43,9 +45,9 @@ const App = () => {
 
   const sideNav = [
     {
-      name: 'Quantrade - AI',
+      name: <div style={{ cursor: "pointer" }} onClick={() => navigate("/dashboard")}>Quantrade - AI</div>,
       id: 'kibana',
-      icon: <EuiIcon type="logoKibana" />,
+      icon: <div style={{ cursor: "pointer" }} onClick={() => navigate("/dashboard")}><EuiIcon type="logoKibana" /></div>,
       items: [
         {
           name: 'Dashboard',
@@ -64,14 +66,6 @@ const App = () => {
           isSelected: selectedItemName === 'Login with your broker',
         },
         {
-          name: 'Monthly status',
-          id: 'monthly-status',
-          onClick: () => handleItemClick('Monthly status', '/monthly-status'),
-          className: 'custom-margin',
-          icon: <EuiIcon type="esqlVis" />,
-          isSelected: selectedItemName === 'Monthly status',
-        },
-        {
           name: 'All users',
           id: 'all-users',
           onClick: () => handleItemClick('All users', '/all-users'),
@@ -79,6 +73,15 @@ const App = () => {
           icon: <EuiIcon type="user" />,
           isSelected: selectedItemName === 'All users',
         },
+        {
+          name: 'Monthly status',
+          id: 'monthly-status',
+          onClick: () => handleItemClick('Monthly status', '/monthly-status'),
+          className: 'custom-margin',
+          icon: <EuiIcon type="esqlVis" />,
+          isSelected: selectedItemName === 'Monthly status',
+        },
+
         {
           name: 'Equity',
           id: 'equity',
@@ -155,6 +158,14 @@ const App = () => {
           icon: <EuiIcon type="refresh" />,
           isSelected: selectedItemName === 'Patch Update',
         },
+        {
+          name: 'About Us',
+          id: 'about-us',
+          onClick: () => handleItemClick('About Us', '/aboutUs'),
+          className: 'custom-margin',
+          icon: <EuiIcon type="visMapRegion" />,
+          isSelected: selectedItemName === 'About Us',
+        },
       ],
     },
   ];
@@ -164,8 +175,30 @@ const App = () => {
     const fetchData = async () => {
       clearAllStores();
       try {
-        // Fetch status data
-        const statusRes = await axios.get(`${baseUrl}/status/current/?paginate=false&clear_cache=false`, { headers });
+        const headers = {
+          'Authorization': `Bearer ${KiteId?.access}`
+        };
+        const baseUrl = process.env.REACT_APP_BASE_URL;
+  
+        // Define all API call promises
+        const statusPromise = axios.get(`${baseUrl}/status/current/?paginate=false&clear_cache=false`, { headers });
+        const equityPromise = axios.get(`${baseUrl}/strategy/bt/equity/search/?paginate=false&clear_cache=false`, { headers });
+        const equityOrderPromise = axios.get(`${baseUrl}/strategy/bt/orders/search/?paginate=false&?clear_cache=true`, { headers });
+        const usersPromise = axios.get(`${baseUrl}/user/profiles/?paginate=false&?clear_cache=false`, { headers });
+        const futurePromise = axios.get(`${baseUrl}/strategy/fno/analysis/search/?paginate=false&?clear_cache=false`, { headers });
+        const futureOrderPromise = axios.get(`${baseUrl}/strategy/orders/?paginate=false&?clear_cache=true`, { headers });
+  
+        // Execute all promises concurrently
+        const [statusRes, equityRes, equityOrderRes, usersRes, futureRes, futureOrderRes] = await Promise.all([
+          statusPromise,
+          equityPromise,
+          equityOrderPromise,
+          usersPromise,
+          futurePromise,
+          futureOrderPromise
+        ]);
+  
+        // Handle status data
         if (statusRes.status === 200) {
           const formattedStatusData = statusRes.data.data;
           await setStatusData(formattedStatusData);
@@ -173,10 +206,8 @@ const App = () => {
         } else {
           throw new Error(`Failed to fetch status data. Status: ${statusRes.status}`);
         }
-
-
-        // Fetch equity data
-        const equityRes = await axios.get(`${baseUrl}/strategy/bt/equity/search/?paginate=false&clear_cache=false`, { headers });
+  
+        // Handle equity data
         if (equityRes.status === 200) {
           const formattedEquityData = equityRes.data.data;
           await setEquityData(formattedEquityData);
@@ -184,9 +215,8 @@ const App = () => {
         } else {
           throw new Error(`Failed to fetch equity data. Status: ${equityRes.status}`);
         }
-
-        // Fetch equity order data
-        const equityOrderRes = await axios.get(`${baseUrl}/strategy/bt/orders/search/?paginate=false&?clear_cache=true`, { headers });
+  
+        // Handle equity order data
         if (equityOrderRes.status === 200) {
           const formattedEquityOrderData = equityOrderRes.data.data;
           await setEquityOrderData(formattedEquityOrderData);
@@ -194,50 +224,42 @@ const App = () => {
         } else {
           throw new Error(`Failed to fetch equity order data. Status: ${equityOrderRes.status}`);
         }
-
-        // Fetch users data
-        const usersRes = await axios.get(`${baseUrl}/user/profiles/?paginate=false&?clear_cache=false`, { headers });
+  
+        // Handle users data
         if (usersRes.status === 200) {
           await setUsersData(usersRes.data.data);
           localStorage.setItem('donotCallApi', false);
         } else {
           throw new Error(`Failed to fetch users data. Status: ${usersRes.status}`);
         }
-        // Fetch Future data
-        const futureRes = await axios.get(`${baseUrl}/strategy/fno/analysis/search/?paginate=false&?clear_cache=false`, { headers });
+  
+        // Handle future data
         if (futureRes.status === 200) {
-          
           await setFutureData(futureRes.data);
           localStorage.setItem('donotCallApi', false);
         } else {
           throw new Error(`Failed to fetch future data. Status: ${futureRes.status}`);
         }
-
-        // Fetch future order data
-        const futureOrderRes = await axios.get(`${baseUrl}/strategy/orders/?paginate=false&?clear_cache=true`, { headers });
+  
+        // Handle future order data
         if (futureOrderRes.status === 200) {
-          console.log("futureOrderRes", futureOrderRes?.data?.data?.results)
-          await setFutureOrderData(futureOrderRes?.data?.data?.results);
+          await setFutureOrderData(futureOrderRes.data.data.results);
           localStorage.setItem('donotCallApi', false);
         } else {
           throw new Error(`Failed to fetch future order data. Status: ${futureOrderRes.status}`);
         }
-
-
-
-
-
+  
         localStorage.setItem('donotCallApi', false);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
-
+  
     if (doNotCall) {
       fetchData();
     }
-  }, [doNotCall])
-
+  }, [doNotCall]);
+  
 
   return (
     <EuiProvider colorMode={colorMode}>
@@ -246,8 +268,11 @@ const App = () => {
           <HeaderUpdates />
           <Sidebar
             button={<button onClick={toggleOpenOnMobile}>Toggle Sidebar</button>}
+           
+            // theme={theme}
             sidebar={
               <EuiSideNav
+
                 aria-label="Sidebar navigation"
                 mobileTitle="Navigate"
                 toggleOpenOnMobile={toggleOpenOnMobile}
@@ -259,6 +284,7 @@ const App = () => {
             header={{ pageTitle: 'Page Title' }}
             panelled={true}
             sidebarSticky={true}
+
             offset={10}
             grow={true}
           />
@@ -267,7 +293,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<LoginForm />} />
           <Route path="/login" element={<LoginForm />} />
-          <Route path="/Signup" element={<SignupForm/>} />
+          <Route path="/Signup" element={<SignupForm />} />
         </Routes>
       )}
     </EuiProvider>

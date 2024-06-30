@@ -12,6 +12,7 @@ import Orders from '../Project/HeaderComponent/Orders';
 import Trades from '../Project/HeaderComponent/Trades';
 import Portfolio from '../Project/HeaderComponent/Portfolio';
 import NetPositions from '../Project/HeaderComponent/NetPositions';
+import AboutUs from '../Project/AboutUs';
 
 const MainContent = () => {
   return (
@@ -25,6 +26,7 @@ const MainContent = () => {
         <Route path="/equity/*" element={<NestedRoutes />} />
         <Route path="/future-options/*" element={<NestedRoutesFuture />} />
         <Route path="/watch-list" element={<WatchList/>} />
+        <Route path="/aboutUs" element={<AboutUs/>} />
         <Route path="orders" element={<Orders />} />
             <Route path="trades" element={<Trades />} />
             <Route path="portfolio" element={<Portfolio />} />

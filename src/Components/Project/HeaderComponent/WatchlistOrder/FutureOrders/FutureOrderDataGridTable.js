@@ -3,7 +3,7 @@ import {
     Comparators,
     EuiBasicTable,
     EuiLink,
-    EuiHealth,
+    EuiBetaBadge,
     EuiFlexGroup,
     EuiFlexItem,
     EuiSpacer,
@@ -16,46 +16,43 @@ import {
     EuiFieldText,
     EuiButtonEmpty,
     EuiModal,
-    EuiDatePicker,
     EuiBadge,
     EuiModalBody,
     EuiModalFooter,
+    EuiDatePicker ,
     EuiModalHeader,
     EuiButtonIcon,
     EuiModalHeaderTitle,
     EuiOverlayMask,
 } from '@elastic/eui';
 import moment from 'moment';
-import EquityModalComponent from './EquityModalComponent';
-import { useNavigate, useLocation } from 'react-router-dom';
+import FutureOrderModalComponent from './FutureOrderModalComponent';
 
-
-const EquityDataGridTable = ({ userData }) => {
-    const navigate = useNavigate();
+const FutureOrderDataGridTable = ({ orderData }) => {
+    console.log("orderDataorderData", orderData)
     const [pageIndex, setPageIndex] = useState(0);
     const [pageSize, setPageSize] = useState(10);
     const [sortField, setSortField] = useState('firstName');
     const [sortDirection, setSortDirection] = useState('asc');
     const [searchValue, setSearchValue] = useState('');
-    const [gtdDate,setGtdDate] = useState(moment())
     const [filterOption, setFilterOption] = useState({
-        current_status: '',
+        order_type: '',
         previous_status: '',
-        is_changed: '',
+        strategy_name: '',
     });
     const [lastRunDate, setLastRunDate] = useState('');
     const [isModalUpdateVisible, setIsModalUpdateVisible] = useState(false);
     const [selectedItems, setSelectedItems] = useState([]); // New state for selected items
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [exportModalOpen, setExportModalOpen] = useState(false)
-    const [statusData, setStatusData] = useState("")
+    const [ordersData, setOrdersData] = useState("")
     const closeUpdateModal = () => setIsModalUpdateVisible(false);
     const showUpdateModal = () => setIsModalUpdateVisible(true);
     const closeModal = () => setIsModalVisible(false);
     const showModal = () => setIsModalVisible(true);
     const openExportModal = () => setExportModalOpen(true)
     const closeExportModal = () => setExportModalOpen(false);
-    console.log("isModalUpdateVisible", userData)
+    console.log("isModalUpdateVisible", orderData)
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         const year = date.getFullYear();
@@ -74,36 +71,36 @@ const EquityDataGridTable = ({ userData }) => {
 
 
     useEffect(() => {
-        if (userData.length > 0) {
-            const latestDate = userData.reduce((maxDate, user) => {
+        if (orderData.length > 0) {
+            const latestDate = orderData.reduce((maxDate, user) => {
                 const currentDate = new Date(user.last_run_dt);
                 return currentDate > maxDate ? currentDate : maxDate;
             }, new Date(0));
 
             setLastRunDate(formatDate(latestDate)); // Assuming formatDate function is defined as in your original code
         }
-    }, [userData]);
-    const updateStatusDetails = (data) => {
+    }, [orderData]);
+    const updateOrderDetails = (data) => {
         showUpdateModal()
-        setStatusData(data)
+        setOrdersData(data)
     }
     const columns = [
         {
-            field: 'symbol',
-            name: 'Symbol',
+            field: 'name',
+            name: 'Name',
             truncateText: true,
             sortable: true,
             mobileOptions: {
                 render: (user) => (
                     <EuiLink href="#" target="_blank">
-                        {user.symbol}
+                        {user.name}
                     </EuiLink>
                 ),
             },
         },
         {
-            field: 'version',
-            name: 'Version',
+            field: 'order_type',
+            name: 'Order Type',
             truncateText: true,
             sortable: true,
             mobileOptions: {
@@ -111,8 +108,8 @@ const EquityDataGridTable = ({ userData }) => {
             },
         },
         {
-            field: 'trade_status',
-            name: 'Trade Status',
+            field: 'trigger',
+            name: 'Trigger',
             truncateText: true,
             sortable: true,
             mobileOptions: {
@@ -120,73 +117,84 @@ const EquityDataGridTable = ({ userData }) => {
             },
         },
         {
-            field: 'ath',
-            name: 'ATH',
+            field: 'status',
+            name: 'Status',
             truncateText: true,
             sortable: true,
             mobileOptions: {
                 show: false,
             },
         },
-        // {
-        //   field: 'ath_date',
-        //   name: 'ATH Date',
-        //   truncateText: true,
-        //   sortable: true,
-        //   mobileOptions: {
-        //     show: false,
-        //   },
-        // },
         {
-            field: 'ath_date',
-            name: 'ATH Date',
-            dataType: 'date',
+            field: 'is_triggered', name: 'Is Triggered',
+            render: (is_triggered) => {
+                const color = is_triggered ? 'success' : 'danger';
+                const label = is_triggered ? <EuiBetaBadge size="s" label="true" iconType="check" className='success' /> : <EuiBetaBadge size="s" label="false" iconType="cross" className='danger' />;
+                return <EuiFlexItem grow={false}>
+                    {label}
+                </EuiFlexItem>;
+            }
+        },
+        {
+            field: 'is_missed', name: 'Is Missed',
+            render: (is_missed) => {
+                const color = is_missed ? 'success' : 'danger';
+                const label = is_missed ? <EuiBetaBadge size="s" label="true" iconType="check" className='success' /> : <EuiBetaBadge size="s" label="false" iconType="cross" className='danger' />;
+                return <EuiFlexItem grow={false}>
+                    {label}
+                </EuiFlexItem>;
+            }
+        },
+        {
+            field: 'is_entry_on', name: 'Is Entry On',
+            render: (is_entry_on) => {
+                const color = is_entry_on ? 'success' : 'danger';
+                const label = is_entry_on ? <EuiBetaBadge size="s" label="true" iconType="check" className='success' /> : <EuiBetaBadge size="s" label="false" iconType="cross" className='danger' />;
+                return <EuiFlexItem grow={false}>
+                    {label}
+                </EuiFlexItem>;
+            }
+        },
+        {
+            field: 'strategy_side', name: 'Strategy Side',
+            truncateText: true,
             sortable: true,
-            render: (ath_date) => formatDate(ath_date),
+            mobileOptions: {
+                show: false,
+            },
+        },
+        {
+            field: 'strategy_name', name: 'Strategy Name',
+            truncateText: true,
+            sortable: true,
+            mobileOptions: {
+                show: false,
+            },
+        },
+        {
+            field: 'buy_sell', name: 'Buy/Sell',
+            truncateText: true,
+            sortable: true,
+            mobileOptions: {
+                show: false,
+            },
         },
 
         {
-            field: 'cc_date',
-            name: 'CC Date',
+            field: 'modified_at',
+            name: 'Modified Date',
             dataType: 'date',
             sortable: true,
-            render: (cc_date) => formatDate(cc_date),
-        },
-        {
-            field: 'entry_date',
-            name: 'Entry Date',
-            dataType: 'date',
-            sortable: true,
-            render: (entry_date) => formatDate(entry_date),
+            render: (modified_at) => formatDate(modified_at),
         },
 
-        // {
-        //   field: 'is_changed',
-        //   name: 'is_changed',
-        //   dataType: 'boolean',
-        //   render: (is_changed) => {
-        //     const color = is_changed ? 'success' : 'danger';
-        //     const label = is_changed ? <EuiBetaBadge size="s" label="true" iconType="check" className='success' /> : <EuiBetaBadge size="s" label="false" iconType="cross" className='danger' />;
-        //     return <EuiFlexItem grow={false}>
-        //       {label}
-        //     </EuiFlexItem>;
-        //   },
-        //   sortable: true,
-        // },
         {
             field: '',
             name: 'Action',
             truncateText: true,
             render: (user) => {
-                return <EuiButtonIcon display="base" onClick={() => updateStatusDetails(user)} iconType="pencil" size="xs" aria-label="Next" />
+                return <EuiButtonIcon display="base" onClick={() => updateOrderDetails(user)} iconType="pencil" size="xs" aria-label="Next" />
             }
-            // sortable: true,
-            // mobileOptions: {
-            //   render: (user) => (
-
-            //     <button>ff</button>
-            //   ),
-            // },
         },
     ];
 
@@ -208,33 +216,32 @@ const EquityDataGridTable = ({ userData }) => {
 
     const handleClearFilters = () => {
         setFilterOption({
-            current_status: '',
-            is_changed: '',
+            order_type: '',
+            strategy_name: '',
         });
         setSearchValue('');
         setPageIndex(0); // Reset pageIndex when filters are cleared
         closeModal();
     };
 
-    const ByVersion = [
-        { text: 'All', value: '' },
-        { text: 'DCC', value: 'DCC' },
-        { text: 'WCC', value: 'WCC' },
-        { text: 'MCC', value: 'MCC' }
+    const ByOrderType = [
+        { text: 'All', value: 'all' },
+        { text: 'Target 1', value: 'target_1' },
+        { text: 'Target 2', value: 'target_2' },
+        { text: 'Target 3', value: 'target_3' },
+        { text: 'Target 4', value: 'target_4' },
+        { text: 'Target 5', value: 'target_5' },
+        { text: 'Entry', value: 'entry' }
     ];
-    const ByPreviousStatus = [
-        { text: 'All', value: '' },
-        { text: 'bull_cf', value: 'bull_cf' },
-        { text: 'bear_cf', value: 'bear_cf' },
-        { text: 'bull', value: 'bull' },
-        { text: 'bear', value: 'bear' },
+    const ByStrategyName = [
+        { text: 'All', value: 'all' },
+        { text: 'SOS4d', value: 'SOS4d' },
+        { text: 'BankNiftyFuture1d2d', value: 'BankNiftyFuture1d2d' },
+        { text: 'StocksFuture2d3d', value: 'StocksFuture2d3d' },
+        { text: 'BankNiftyFuture1d2d', value: 'BankNiftyFuture1d2d' },
     ];
 
-    const ByIsChanged = [
-        { value: '', text: 'Select change status' },
-        { value: 'true', text: 'True' },
-        { value: 'false', text: 'False' },
-    ];
+
 
     const findUsers = (users, pageIndex, pageSize, sortField, sortDirection) => {
         let items = [...users];
@@ -247,18 +254,26 @@ const EquityDataGridTable = ({ userData }) => {
             const normalizedSearchValue = searchValue.trim().toLowerCase();
             items = items.filter(
                 (user) =>
-                    user.symbol.toLowerCase() === normalizedSearchValue
-               
+                    user.name.toLowerCase() === normalizedSearchValue
+                //   ||
+                //   user.order_type.toLowerCase() === normalizedSearchValue
             );
         }
 
-        if (filterOption.version) {
-            items = items.filter((user) => user.version === filterOption.version);
+        if (filterOption.order_type) {
+            items = items.filter((user) => user.order_type === filterOption.order_type);
         }
+        if (filterOption.strategy_name) {
+          items = items.filter((user) => user.strategy_name === filterOption.strategy_name);
+        }
+
+        // if (filterOption.strategy_name) {
+        //   const isChanged = filterOption.strategy_name === 'true';
+        //   items = items.filter((user) => user.strategy_name === isChanged);
+        // }
 
         const startIndex = pageIndex * pageSize;
         const pageOfItems = items.slice(startIndex, startIndex + pageSize);
-        console.log("pageOfItems",pageOfItems)
 
         return {
             pageOfItems,
@@ -267,7 +282,7 @@ const EquityDataGridTable = ({ userData }) => {
     };
 
     const { pageOfItems, totalItemCount } = findUsers(
-        userData,
+        orderData,
         pageIndex,
         pageSize,
         sortField,
@@ -311,6 +326,27 @@ const EquityDataGridTable = ({ userData }) => {
     };
 
     const [customerIdData, setCustomerIdData] = useState("")
+    const [gtdDate,setGtdDate] = useState(moment())
+    function addFivePercent(amount) {
+        // Calculate 5% of the given amount
+        const fivePercent = amount * 0.03;
+
+        // Add the 5% to the original amount
+        const total = amount + fivePercent;
+
+        // Return the total amount
+        return total;
+    }
+    function subtractFivePercent(amount) {
+        // Calculate 5% of the given amount
+        const fivePercent = amount * 0.03;
+
+        // Add the 5% to the original amount
+        const total = amount - fivePercent;
+
+        // Return the total amount
+        return total;
+    }
     const handleExportCSV = () => {
 
         if (selectedItems.length != 0) {
@@ -321,29 +357,29 @@ const EquityDataGridTable = ({ userData }) => {
                 entry_date: formatDate(row.entry_date),
                 // Add more fields as needed
             }));
-            console.log("rowrowrowrow",selectedItems)
+            console.log("rowrowrowrow", selectedItems)
             // Extract selected rows and convert to CSV format
             const csvData = formattedRows.map(row =>
             // Map each row to an object containing all fields
             ({
-                'exchange': 'NSE',
-                'ScripCode': row.exchange_token,
-                'Company': row.symbol,
-                'OrderPrice': "",
-                "TriggerPrice": row?.entries ? row?.entries?.trigger : "",
-                "OrderQty": "",
+                'Exchange': 'NSE',
+                'ScripCode': row?.current_status?.instruments?.exchange_token,
+                'ScripName': row?.current_status?.symbol,
+                'OrderPrice':  row?.buy_sell=== "BUY" ? addFivePercent(row?.trigger):subtractFivePercent(row?.trigger),
+                "TriggerPrice":  row?.trigger,
+                "OrderQty":row?.lot_size,
                 "DisclosedQty": 0,
-                "BuySell": "BUY",
-                "OrderType": "",
+                "BuySell": row?.buy_sell,
+                "OrderType": "NEW",
                 "RMS": "",
-                "PriceType": "",
+                "PriceType": "Limit",
                 "CustomerId": customerIdData,
-                "S2KID": "",
-                "OrderID": "",
-                "ExecQty": "",
-                "ExecPrice": "",
-                "OrderValue": "",
-                "GTDDate": gtdDate
+                "S2KID": customerIdData,
+                "OrderID": 0,
+                "ExecQty": 0,
+                "ExecPrice": 0,
+                "OrderValid":"GFD",
+                "GTDDate": gtdDate.format('YYYY-MM-DD')
             })
             );
 
@@ -375,10 +411,8 @@ const EquityDataGridTable = ({ userData }) => {
             handleExportCSV()
         }
     }
-   
-
     const AddtoWatchlist = ()=>{
-        navigate('/watch-list', { state: { selectedItems ,form:"equityAnalysis"} });
+        console.log("selectedItemsselectedItems", selectedItems)
     }
 
 
@@ -395,13 +429,13 @@ const EquityDataGridTable = ({ userData }) => {
                 </EuiFlexItem>
 
                 <div style={{ marginLeft: "50%", display: "flex", marginTop: "5px" }}>
-                <EuiFlexItem grow={false} style={{ fontWeight: "700" }} onClick={() => selectedItems.length != 0 ? AddtoWatchlist() : ""}>
+                {/* <EuiFlexItem grow={false} style={{ fontWeight: "700" }} onClick={() => selectedItems.length != 0 ? AddtoWatchlist() : ""}>
                         <EuiBadge color="success" isDisabled={selectedItems.length != 0 ? false : true}>
                             <EuiIcon type="plus" /> &nbsp;Add to Watchlist
                         </EuiBadge>
 
                     </EuiFlexItem>
-                    &nbsp; &nbsp;
+                    &nbsp; &nbsp; */}
                     <EuiFlexItem grow={false} style={{ fontWeight: "700" }} onClick={() => selectedItems.length != 0 ? openExportModal() : ""}>
                         <EuiBadge color="subdued" isDisabled={selectedItems.length != 0 ? false : true}>
                             <EuiIcon type="download" /> &nbsp;Download Files
@@ -442,11 +476,21 @@ const EquityDataGridTable = ({ userData }) => {
                         <EuiModalBody>
                             <EuiFlexGroup>
                                 <EuiFlexItem>
-                                    <EuiFormRow label="Filter by Version">
+                                    <EuiFormRow label="Filter by Order Type">
                                         <EuiSelect
-                                            name="version"
-                                            options={ByVersion}
-                                            value={filterOption.version}
+                                            name="order_type"
+                                            options={ByOrderType}
+                                            value={filterOption.order_type}
+                                            onChange={handleFilterChange}
+                                        />
+                                    </EuiFormRow>
+                                </EuiFlexItem>
+                                <EuiFlexItem>
+                                    <EuiFormRow label="Filter by Strategy Name">
+                                        <EuiSelect
+                                            name="strategy_name"
+                                            options={ByStrategyName}
+                                            value={filterOption.strategy_name}
                                             onChange={handleFilterChange}
                                         />
                                     </EuiFormRow>
@@ -506,9 +550,9 @@ const EquityDataGridTable = ({ userData }) => {
                 </EuiOverlayMask>
             )}
 
-            <EquityModalComponent statusData={statusData != undefined ? statusData : ""} isModalUpdateVisible={isModalUpdateVisible} setIsModalUpdateVisible={setIsModalUpdateVisible} closeUpdateModal={closeUpdateModal} showUpdateModal={showUpdateModal} />
+            <FutureOrderModalComponent ordersData={ordersData != undefined ? ordersData : ""} isModalUpdateVisible={isModalUpdateVisible} setIsModalUpdateVisible={setIsModalUpdateVisible} closeUpdateModal={closeUpdateModal} showUpdateModal={showUpdateModal} />
         </>
     );
 };
 
-export default EquityDataGridTable;
+export default FutureOrderDataGridTable;

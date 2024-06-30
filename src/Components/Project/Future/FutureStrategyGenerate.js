@@ -75,7 +75,7 @@ const FutureStrategyGenerate = () => {
 
   return (
     <>
-      <EuiButton onClick={showModal}>Show Create Strategy Modal</EuiButton>
+      {/* <EuiButton onClick={showModal}>Show Create Strategy Modal</EuiButton> */}
 
       {isModalVisible && (
         <EuiModal onClose={closeModal} initialFocus="[name=popswitch]">

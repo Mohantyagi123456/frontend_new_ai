@@ -217,13 +217,13 @@ const EquityDataGridTable = ({ userData }) => {
     };
 
     const ByVersion = [
-        { text: 'All', value: '' },
+        { text: 'All', value: 'all' },
         { text: 'DCC', value: 'DCC' },
         { text: 'WCC', value: 'WCC' },
         { text: 'MCC', value: 'MCC' }
     ];
     const ByPreviousStatus = [
-        { text: 'All', value: '' },
+        { text: 'All', value: 'all' },
         { text: 'bull_cf', value: 'bull_cf' },
         { text: 'bear_cf', value: 'bear_cf' },
         { text: 'bull', value: 'bull' },

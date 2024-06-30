@@ -61,15 +61,18 @@ console.log("isModalUpdateVisible",isModalUpdateVisible)
     return `${year}-${month}-${day}`;
   };
 
-
+  function NewformatDate(date) {
+    return date.toString().split(' GMT')[0];
+  }
+  
   useEffect(() => {
     if (userData.length > 0) {
       const latestDate = userData.reduce((maxDate, user) => {
         const currentDate = new Date(user.last_run_dt);
         return currentDate > maxDate ? currentDate : maxDate;
       }, new Date(0));
-
-      setLastRunDate(formatDate(latestDate)); // Assuming formatDate function is defined as in your original code
+console.log("latestDate",latestDate)
+      setLastRunDate(NewformatDate(latestDate)); // Assuming formatDate function is defined as in your original code
     }
   }, [userData]);
 const updateStatusDetails=(data)=>{
@@ -191,12 +194,14 @@ const updateStatusDetails=(data)=>{
   };
 
   const ByCurrentStatus = [
+    { text: 'All', value: '' },
     { text: 'bull_cf', value: 'bull_cf' },
     { text: 'bear_cf', value: 'bear_cf' },
     { text: 'bull', value: 'bull' },
     { text: 'bear', value: 'bear' },
   ];
   const ByPreviousStatus = [
+    { text: 'All', value: '' },
     { text: 'bull_cf', value: 'bull_cf' },
     { text: 'bear_cf', value: 'bear_cf' },
     { text: 'bull', value: 'bull' },
@@ -305,7 +310,7 @@ const updateStatusDetails=(data)=>{
         </EuiFlexItem>
         <EuiFlexItem grow={false} style={{ marginLeft: 'auto', marginRight: '-150px' ,fontWeight:"700"}}>
           <div>
-            Last Run Date: {lastRunDate}
+            Last Update : {lastRunDate}
           </div>
         </EuiFlexItem>
         <div style={{ marginLeft: "50%", display: "flex", marginTop: "5px" }}>

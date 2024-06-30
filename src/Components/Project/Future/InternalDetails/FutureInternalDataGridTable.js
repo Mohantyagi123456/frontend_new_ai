@@ -7,11 +7,13 @@ import {
     EuiBetaBadge,
     EuiFlexItem,
     EuiSpacer,
+    EuiButton,
     EuiLink
 } from '@elastic/eui';
-import { useLocation } from 'react-router-dom';
+import { useLocation,useNavigate } from 'react-router-dom';
 
 const FutureInternalDataGridTable = () => {
+    const navigate = useNavigate();
     const location = useLocation();
     const { kk } = location.state || {};
 
@@ -143,6 +145,15 @@ const FutureInternalDataGridTable = () => {
                         fullWidth
                     />
                 </EuiFlexItem>
+                <EuiFlexItem grow={false}>
+            <EuiButton
+              color="success"
+              size="s"
+              onClick={() => {navigate("/future-options")}}
+            >
+              Back
+            </EuiButton>
+          </EuiFlexItem>
             </EuiFlexGroup>
             <EuiSpacer size="l" />
             <EuiBasicTable

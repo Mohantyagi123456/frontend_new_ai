@@ -281,6 +281,8 @@ const HeaderUserMenu = () => {
 const AppHeader = () => {
   const [isFixed, setIsFixed] = useState(true);
   const [theme, setTheme] = useState('default');
+  localStorage.setItem("theme",theme)
+  const navigate = useNavigate()
 
   const breadcrumbs = [
     {
@@ -306,7 +308,7 @@ const AppHeader = () => {
             items: [
               <EuiHeaderSection>
                 <EuiHeaderSectionItem>
-                <div style={{marginLeft:"20px"}}>
+                <div style={{marginLeft:"20px",cursor:"pointer"}}  onClick={()=>navigate("/dashboard")}>
                 <img src={theme == "dark"?dark_logo:bright_logo} height={30} width={125}/>
                 </div>
                   {/* <EuiHeaderLogo>Quantrade - AI</EuiHeaderLogo> */}

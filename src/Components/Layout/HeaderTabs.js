@@ -1,50 +1,49 @@
-import React, { Fragment } from 'react';
-import { EuiIcon, EuiTabbedContent, EuiText, EuiSpacer } from '@elastic/eui';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { EuiTabbedContent } from '@elastic/eui';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const HeaderTabs = () => {
-    const navigate = useNavigate()
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [selectedTab, setSelectedTab] = useState(null);
+
+  console.log("location.pathname",location.pathname)
+  
   const tabs = [
     {
       id: 'watch-list',
       path: '/watch-list',
-      name: 'Watchlist',
-      
+      name: <div  className={`${location.pathname == "/watch-list"  ?"activeness":""}`}>Watchlist</div>,
+    },
+   
+    {
+      id: 'portfolio',
+      path: '/portfolio',
+      name: <div  className={`${ location.pathname == "/portfolio" ?"activeness":""}`}>Portfolio</div>,
+
     },
     {
-        id: 'orders',
-        path: '/orders',
-        name: 'Orders',
-        
-      },
-      {
-        id: 'trades',
-        path: '/trades',
-        name: 'Trades',
-        
-      },
-      {
-        id: 'portfolio',
-        path: '/portfolio',
-        name: 'Portfolio',
-       
-      },
-      {
-        id: 'net-positions',
-        path: '/net-positions',
-        name: 'Net-Positions',
-        
-      },
-   
+      id: 'net-positions',
+      path: '/net-positions',
+      name: <div  className={`${location.pathname == "/net-positions" ?"activeness":""}`}>Net-Positions</div>,
+
+    },
   ];
 
+  useEffect(() => {
+    const currentTab = tabs.find(tab => tab.path === location.pathname);
+    setSelectedTab(currentTab);
+  }, []);
+console.log("selectedTab",selectedTab?.path)
   return (
     <EuiTabbedContent
       tabs={tabs}
-      initialSelectedTab={tabs[1]}
+       initialSelectedTab={selectedTab}
+      //  selectedTab={selectedTab}
+       
       autoFocus="selected"
       onTabClick={(tab) => {
-        navigate(tab.path)
+        navigate(tab.path);
         console.log('clicked tab', tab);
       }}
     />
