@@ -12,7 +12,7 @@ import {
 } from '@elastic/eui';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import dark_logo from '../assests/dark_logo.jpeg';
+import bright_logo from '../assests/bright_logo.jpeg';
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -52,9 +52,9 @@ const LoginForm = () => {
 
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-      <EuiPanel style={{ maxWidth: 400, padding: 20, textAlign: 'center' }}>
+      <EuiPanel style={{ maxWidth: 430, padding: 20, textAlign: 'center',width:430 }}>
         <EuiTitle size="3">
-          <img src={dark_logo} height={100} width={400} style={{ marginLeft: '-20px', marginTop: '-20px' }} />
+          <img src={bright_logo} height={100} width={400} style={{ marginLeft: '-13px', marginTop: '-10px' }} />
         </EuiTitle>
         <EuiText>
           <h4>Login With your Account</h4>

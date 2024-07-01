@@ -286,6 +286,27 @@ const EquityOrderDataGridTable = ({ orderData }) => {
     };
 
     const [customerIdData, setCustomerIdData] = useState("")
+
+    function addFivePercent(amount) {
+        // Calculate 5% of the given amount
+        const fivePercent = amount * 0.03;
+
+        // Add the 5% to the original amount
+        const total = amount + fivePercent;
+
+        // Return the total amount
+        return total;
+    }
+    function subtractFivePercent(amount) {
+        // Calculate 5% of the given amount
+        const fivePercent = amount * 0.03;
+
+        // Add the 5% to the original amount
+        const total = amount - fivePercent;
+
+        // Return the total amount
+        return total;
+    }
     const handleExportCSV = () => {
 
         if (selectedItems.length != 0) {
@@ -296,36 +317,36 @@ const EquityOrderDataGridTable = ({ orderData }) => {
                 entry_date: formatDate(row.entry_date),
                 // Add more fields as needed
             }));
-            console.log("rowrowrowrow",selectedItems)
+            console.log("rowrowrowrow", selectedItems)
             // Extract selected rows and convert to CSV format
             const csvData = formattedRows.map(row =>
             // Map each row to an object containing all fields
             ({
-                'exchange': 'NSE',
-                'ScripCode': row.exchange_token,
-                'Company': row.trading_symbol,
-                'OrderPrice': "",
-                "TriggerPrice": row?.entries ? row?.entries?.trigger : "",
-                "OrderQty": "",
+                'Exchange': 'NSE',
+                'ScripCode': row?.current_status?.instruments?.exchange_token,
+                'ScripName': row?.trading_symbol,
+                "TriggerPrice":  row?.trigger,
+                'OrderPrice':  row?.buy_sell=== "BUY" ? addFivePercent(row?.trigger):subtractFivePercent(row?.trigger),
+                "OrderQty":row?.quantity,
                 "DisclosedQty": 0,
-                "BuySell": "BUY",
-                "OrderType": "",
+                "BuySell": row?.buy_sell ? row?.buy_sell:"BUY",
+                "OrderType": "NEW",
                 "RMS": "",
-                "PriceType": "",
+                "PriceType": "LIMIT",
                 "CustomerId": customerIdData,
-                "S2KID": "",
-                "OrderID": "",
-                "ExecQty": "",
-                "ExecPrice": "",
-                "OrderValue": "",
-                "GTDDate": gtdDate
+                "S2KID": customerIdData,
+                "OrderID": 0,
+                "ExecQty": 0,
+                "ExecPrice": 0,
+                "OrderValid":"GFD",
+                "GTDDate": gtdDate.format('YYYY-MM-DD')
             })
             );
 
             // Create CSV file
             const csvHeaders = Object.keys(csvData[0]);
             const csvRows = csvData.map(row => csvHeaders.map(header => row[header]));
-            const csvContent = [csvHeaders.join(','), ...csvRows.map(row => row.join(',')).join('\n')];
+            const csvContent = [csvHeaders.join(','), ...csvRows.map(row => row.join(','))].join('\n');
 
             // Create a Blob object and initiate download
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });

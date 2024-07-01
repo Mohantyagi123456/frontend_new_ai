@@ -11,7 +11,7 @@ import {
 } from '@elastic/eui';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import dark_logo from '../assests/dark_logo.jpeg';
+import bright_logo from '../assests/bright_logo.jpeg';
 
 const SignupForm = () => {
   const navigate = useNavigate();
@@ -82,9 +82,9 @@ const SignupForm = () => {
 
   return (
     <div style={{ justifyContent: 'center', alignItems: 'center' }}>
-      <EuiPanel style={{ maxWidth: 400, padding: 20, textAlign: 'center', marginLeft: '33%', marginTop: '5%' }}>
+      <EuiPanel style={{ maxWidth: 430, padding: 20, textAlign: 'center', marginLeft: '33%', marginTop: '5%' }}>
         <EuiTitle size="3">
-          <img src={dark_logo} height={100} width={400} style={{ marginLeft: '-20px', marginTop: '-20px' }} />
+          <img src={bright_logo} height={100} width={400} style={{ marginLeft: '-13px', marginTop: '-10px' }} />
         </EuiTitle>
         <EuiText>
           <h4>Sign Up for an Account</h4>
@@ -107,7 +107,7 @@ const SignupForm = () => {
             <EuiFormRow label="Password">
               <EuiFieldText type="password" name="password" value={formData.password} onChange={handleChange} />
             </EuiFormRow>
-            <EuiFormRow label="PAN Card">
+            {/* <EuiFormRow label="PAN Card">
               <EuiFieldText name="pan_card" value={formData.pan_card} onChange={handleChange} />
             </EuiFormRow>
             <EuiFormRow label="Aadhaar Card">
@@ -135,7 +135,7 @@ const SignupForm = () => {
             </EuiFormRow>
             <EuiFormRow label="City">
               <EuiFieldText name="city" value={formData.address.city} onChange={(e) => handleNestedChange(e, 'address')} />
-            </EuiFormRow>
+            </EuiFormRow> */}
             <EuiFormRow label="Pincode">
               <EuiFieldText name="pincode" value={formData.address.pincode} onChange={(e) => handleNestedChange(e, 'address')} />
             </EuiFormRow>

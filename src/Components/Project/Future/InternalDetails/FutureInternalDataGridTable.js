@@ -10,7 +10,7 @@ import {
     EuiButton,
     EuiLink
 } from '@elastic/eui';
-import { useLocation,useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const FutureInternalDataGridTable = () => {
     const navigate = useNavigate();
@@ -134,6 +134,58 @@ const FutureInternalDataGridTable = () => {
         initialSelected: selectedItems
     };
 
+    const getExpandedRowColumns = (strategy_name) => {
+        const baseColumns = [
+            { field: 'name', name: 'Name' },
+            { field: 'LTP', name: 'LTP' },
+            { field: 'buy_sell', name: 'Buy/Sell' },
+            { field: 'strike_price', name: 'Strike Price' },
+            { field: 'trigger', name: 'Trigger' },
+            { field: 'lot_size', name: 'Lot Size' },
+            { field: 'order_type', name: 'Order Type' },
+            { field: 'status', name: 'Status' },
+            {
+                field: 'is_triggered', name: 'Is Triggered',
+                render: (is_triggered) => {
+                    const color = is_triggered ? 'success' : 'danger';
+                    const label = is_triggered ? <EuiBetaBadge size="s" label="true" iconType="check" className='success' /> : <EuiBetaBadge size="s" label="false" iconType="cross" className='danger' />;
+                    return <EuiFlexItem grow={false}>
+                        {label}
+                    </EuiFlexItem>;
+                }
+            },
+            {
+                field: 'is_missed', name: 'Is Missed',
+                render: (is_missed) => {
+                    const color = is_missed ? 'success' : 'danger';
+                    const label = is_missed ? <EuiBetaBadge size="s" label="true" iconType="check" className='success' /> : <EuiBetaBadge size="s" label="false" iconType="cross" className='danger' />;
+                    return <EuiFlexItem grow={false}>
+                        {label}
+                    </EuiFlexItem>;
+                }
+            },
+            {
+                field: 'is_entry_on', name: 'Is Entry On',
+                render: (is_entry_on) => {
+                    const color = is_entry_on ? 'success' : 'danger';
+                    const label = is_entry_on ? <EuiBetaBadge size="s" label="true" iconType="check" className='success' /> : <EuiBetaBadge size="s" label="false" iconType="cross" className='danger' />;
+                    return <EuiFlexItem grow={false}>
+                        {label}
+                    </EuiFlexItem>;
+                }
+            }
+        ];
+
+        if (!strategy_name.toLowerCase().includes('future')) {
+            baseColumns.push(
+                { field: 'option_side', name: 'Option Side' },
+                { field: 'strategy_side', name: 'Strategy Side' }
+            );
+        }
+
+        return baseColumns;
+    };
+
     return (
         <>
             <EuiFlexGroup alignItems="center">
@@ -146,14 +198,14 @@ const FutureInternalDataGridTable = () => {
                     />
                 </EuiFlexItem>
                 <EuiFlexItem grow={false}>
-            <EuiButton
-              color="success"
-              size="s"
-              onClick={() => {navigate("/future-options")}}
-            >
-              Back
-            </EuiButton>
-          </EuiFlexItem>
+                    <EuiButton
+                        color="success"
+                        size="s"
+                        onClick={() => { navigate("/future-options") }}
+                    >
+                        Back
+                    </EuiButton>
+                </EuiFlexItem>
             </EuiFlexGroup>
             <EuiSpacer size="l" />
             <EuiBasicTable
@@ -180,49 +232,7 @@ const FutureInternalDataGridTable = () => {
                         <div key={`nested-table-${expandedRowKey}`} style={{ marginLeft: '20px', marginTop: '10px' }}>
                             <EuiBasicTable
                                 items={pageOfItems.find(item => item.key === expandedRowKey)?.details || []}
-                                columns={[
-                                    { field: 'name', name: 'Name' },
-                                    { field: 'LTP', name: 'LTP' },
-                                    { field: 'buy_sell', name: 'Buy/Sell' },
-                                    { field: 'strike_price', name: 'Strike Price' },
-                                    { field: 'option_side', name: 'Option Side' },
-                                    { field: 'strategy_side', name: 'Strategy Side' },
-                                    { field: 'trigger', name: 'Trigger' },
-                                    { field: 'lot_size', name: 'Lot Size' },
-                                    { field: 'order_type', name: 'Order Type' },
-                                    { field: 'status', name: 'Status' },
-                                    {
-                                        field: 'is_triggered', name: 'Is Triggered',
-                                        render: (is_triggered) => {
-                                            const color = is_triggered ? 'success' : 'danger';
-                                            const label = is_triggered ? <EuiBetaBadge size="s" label="true" iconType="check" className='success' /> : <EuiBetaBadge size="s" label="false" iconType="cross" className='danger' />;
-                                            return <EuiFlexItem grow={false}>
-                                                {label}
-                                            </EuiFlexItem>;
-                                        }
-                                    },
-                                    {
-                                        field: 'is_missed', name: 'Is Missed',
-                                        render: (is_missed) => {
-                                            const color = is_missed ? 'success' : 'danger';
-                                            const label = is_missed ? <EuiBetaBadge size="s" label="true" iconType="check" className='success' /> : <EuiBetaBadge size="s" label="false" iconType="cross" className='danger' />;
-                                            return <EuiFlexItem grow={false}>
-                                                {label}
-                                            </EuiFlexItem>;
-                                        }
-                                    },
-                                    {
-                                        field: 'is_entry_on', name: 'Is Entry On',
-                                        render: (is_entry_on) => {
-                                            const color = is_entry_on ? 'success' : 'danger';
-                                            const label = is_entry_on ? <EuiBetaBadge size="s" label="true" iconType="check" className='success' /> : <EuiBetaBadge size="s" label="false" iconType="cross" className='danger' />;
-                                            return <EuiFlexItem grow={false}>
-                                                {label}
-                                            </EuiFlexItem>;
-                                        }
-                                    },
-                                    // Add more columns as needed
-                                ]}
+                                columns={getExpandedRowColumns(pageOfItems.find(item => item.key === expandedRowKey)?.name)}
                             />
                         </div>
                     ),

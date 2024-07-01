@@ -37,7 +37,7 @@ const EquityDataGridTable = ({ userData }) => {
     const [sortField, setSortField] = useState('firstName');
     const [sortDirection, setSortDirection] = useState('asc');
     const [searchValue, setSearchValue] = useState('');
-    const [gtdDate,setGtdDate] = useState(moment())
+    const [gtdDate, setGtdDate] = useState(moment())
     const [filterOption, setFilterOption] = useState({
         current_status: '',
         previous_status: '',
@@ -72,7 +72,9 @@ const EquityDataGridTable = ({ userData }) => {
         return `${year}-${month}-${day}`;
     };
 
-
+    function NewformatDate(date) {
+        return date.toString().split(' GMT')[0];
+    }
     useEffect(() => {
         if (userData.length > 0) {
             const latestDate = userData.reduce((maxDate, user) => {
@@ -80,7 +82,7 @@ const EquityDataGridTable = ({ userData }) => {
                 return currentDate > maxDate ? currentDate : maxDate;
             }, new Date(0));
 
-            setLastRunDate(formatDate(latestDate)); // Assuming formatDate function is defined as in your original code
+            setLastRunDate(NewformatDate(latestDate)); // Assuming formatDate function is defined as in your original code
         }
     }, [userData]);
     const updateStatusDetails = (data) => {
@@ -222,19 +224,19 @@ const EquityDataGridTable = ({ userData }) => {
         { text: 'WCC', value: 'WCC' },
         { text: 'MCC', value: 'MCC' }
     ];
-    const ByPreviousStatus = [
-        { text: 'All', value: '' },
-        { text: 'bull_cf', value: 'bull_cf' },
-        { text: 'bear_cf', value: 'bear_cf' },
-        { text: 'bull', value: 'bull' },
-        { text: 'bear', value: 'bear' },
-    ];
+    // const ByPreviousStatus = [
+    //     { text: 'All', value: '' },
+    //     { text: 'bull_cf', value: 'bull_cf' },
+    //     { text: 'bear_cf', value: 'bear_cf' },
+    //     { text: 'bull', value: 'bull' },
+    //     { text: 'bear', value: 'bear' },
+    // ];
 
-    const ByIsChanged = [
-        { value: '', text: 'Select change status' },
-        { value: 'true', text: 'True' },
-        { value: 'false', text: 'False' },
-    ];
+    // const ByIsChanged = [
+    //     { value: '', text: 'Select change status' },
+    //     { value: 'true', text: 'True' },
+    //     { value: 'false', text: 'False' },
+    // ];
 
     const findUsers = (users, pageIndex, pageSize, sortField, sortDirection) => {
         let items = [...users];
@@ -248,7 +250,7 @@ const EquityDataGridTable = ({ userData }) => {
             items = items.filter(
                 (user) =>
                     user.symbol.toLowerCase() === normalizedSearchValue
-               
+
             );
         }
 
@@ -258,7 +260,7 @@ const EquityDataGridTable = ({ userData }) => {
 
         const startIndex = pageIndex * pageSize;
         const pageOfItems = items.slice(startIndex, startIndex + pageSize);
-        console.log("pageOfItems",pageOfItems)
+        console.log("pageOfItems", pageOfItems)
 
         return {
             pageOfItems,
@@ -321,16 +323,17 @@ const EquityDataGridTable = ({ userData }) => {
                 entry_date: formatDate(row.entry_date),
                 // Add more fields as needed
             }));
-            console.log("rowrowrowrow",selectedItems)
+            console.log("rowrowrowrow", selectedItems)
             // Extract selected rows and convert to CSV format
             const csvData = formattedRows.map(row =>
             // Map each row to an object containing all fields
+            console.log("rowrow",row)
             ({
                 'exchange': 'NSE',
                 'ScripCode': row.exchange_token,
                 'Company': row.symbol,
-                'OrderPrice': "",
                 "TriggerPrice": row?.entries ? row?.entries?.trigger : "",
+                'OrderPrice': "",
                 "OrderQty": "",
                 "DisclosedQty": 0,
                 "BuySell": "BUY",
@@ -375,10 +378,10 @@ const EquityDataGridTable = ({ userData }) => {
             handleExportCSV()
         }
     }
-   
 
-    const AddtoWatchlist = ()=>{
-        navigate('/watch-list', { state: { selectedItems ,form:"equityAnalysis"} });
+
+    const AddtoWatchlist = () => {
+        navigate('/watch-list', { state: { selectedItems, form: "equityAnalysis" } });
     }
 
 
@@ -393,9 +396,14 @@ const EquityDataGridTable = ({ userData }) => {
                         fullWidth
                     />
                 </EuiFlexItem>
+                <EuiFlexItem grow={true} style={{ marginLeft: 'auto',marginRight:"-425px", fontWeight: "700" }}>
+                    <div>
+                        Last Update : {lastRunDate}
+                    </div>
+                </EuiFlexItem>
 
                 <div style={{ marginLeft: "50%", display: "flex", marginTop: "5px" }}>
-                <EuiFlexItem grow={false} style={{ fontWeight: "700" }} onClick={() => selectedItems.length != 0 ? AddtoWatchlist() : ""}>
+                    <EuiFlexItem grow={false} style={{ fontWeight: "700" }} onClick={() => selectedItems.length != 0 ? AddtoWatchlist() : ""}>
                         <EuiBadge color="success" isDisabled={selectedItems.length != 0 ? false : true}>
                             <EuiIcon type="plus" /> &nbsp;Add to Watchlist
                         </EuiBadge>
