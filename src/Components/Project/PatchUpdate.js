@@ -48,7 +48,7 @@ const PatchUpdate = () => {
     console.log("patchValue", patchValue)
     if (ee.name != '' || ee.name != 'undefined') {
       const hh = ee.name === "Monthly Status" ? "FUT" : ee.name === "Equity" ? "EQ" : ""
-      if (lastUsedDate !== presentDate) {
+      // if (lastUsedDate !== presentDate) {
        
         const body = {
           update_column: hh,
@@ -69,9 +69,9 @@ const PatchUpdate = () => {
         } catch (error) {
           console.error('Error patching data:', error);
         }
-      } else {
-        navigate('/broker-login');
-      }
+      // } else {
+      //   navigate('/broker-login');
+      // }
     }
   };
 

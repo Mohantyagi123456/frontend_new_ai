@@ -14,14 +14,12 @@ import {
     EuiBadge,
     EuiIcon,
 } from '@elastic/eui';
+import EquityDetails from '../Project/Equity/Details/EquityDetails';
 
 const NestedRoutes = () => {
   const KiteId = JSON.parse(localStorage.getItem('userData'));
   const [orderData, setOrderData] = useState([])
 
-  const headers = {
-    'Authorization': `Bearer ${KiteId?.access}`
-  };
 
   useEffect(() => {
     const fetchUserDataFromDB = async () => {
@@ -39,11 +37,9 @@ const NestedRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<Equity />} />
+      <Route path="/details" element={<EquityDetailsEach />} />
       <Route path="/orders" element={<EquityOrders orderData={orderData} />} />
       <Route path="/risk-management" element={<EquityRiskManagement />} />
-      {/* <Route path="/" element={<FutureOptions />} /> */}
-      {/* <Route path="/future-orders" element={<FutureOptionsOrders />} />
-      <Route path="/future-risk-management" element={<FutureOptionsRiskManagement />} /> */}
     </Routes>
   );
 };
@@ -56,6 +52,16 @@ const EquityOrders = (orderData) => {
       <h2>Equity Orders</h2>
       <div style={{ marginTop: "50px" }}>
         <EquityOrderDataGridTable orderData={orderData?.orderData} />
+      </div>
+    </EuiText>);
+};
+const EquityDetailsEach = () => {
+
+  return (
+    <EuiText>
+      {/* <h2>Equity Details</h2> */}
+      <div style={{ marginTop: "50px" }}>
+        <EquityDetails />
       </div>
     </EuiText>);
 };
@@ -141,16 +147,6 @@ const EquityRiskManagement = () => {
          </div>
       </div>
   );
-};
-
-
-// Placeholder components for FutureOptions nested routes
-const FutureOptionsOrders = () => {
-  return <div>Future Options Orders Component</div>;
-};
-
-const FutureOptionsRiskManagement = () => {
-  return <div>Future Options Risk Management Component</div>;
 };
 
 export default NestedRoutes;

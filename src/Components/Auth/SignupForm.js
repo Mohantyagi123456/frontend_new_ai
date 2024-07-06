@@ -55,7 +55,7 @@ const SignupForm = () => {
       ...prevData,
       [nestedObj]: {
         ...prevData[nestedObj],
-        [name]: fieldName ? { ...prevData[nestedObj][fieldName], [name]: value } : value,
+        [name]: fieldName ? { ...prevData[nestedObj][fieldName], [name]: parseInt(value) } : parseInt(value),
       },
     }));
   };
@@ -136,6 +136,13 @@ const SignupForm = () => {
             <EuiFormRow label="City">
               <EuiFieldText name="city" value={formData.address.city} onChange={(e) => handleNestedChange(e, 'address')} />
             </EuiFormRow> */}
+            <EuiFormRow label="Contact Number">
+              <EuiFieldText
+                name="contact"
+                value={formData.contact.contact}
+                onChange={(e) => handleNestedChange(e, 'contact')}
+              />
+            </EuiFormRow>
             <EuiFormRow label="Pincode">
               <EuiFieldText name="pincode" value={formData.address.pincode} onChange={(e) => handleNestedChange(e, 'address')} />
             </EuiFormRow>

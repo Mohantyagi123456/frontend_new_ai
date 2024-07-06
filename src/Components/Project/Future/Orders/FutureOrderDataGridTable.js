@@ -128,7 +128,7 @@ const FutureOrderDataGridTable = ({ orderData }) => {
             },
         },
         {
-            field: 'is_triggered', name: 'Is Triggered',
+            field: 'is_triggered', name: 'Triggered',
             render: (is_triggered) => {
                 const color = is_triggered ? 'success' : 'danger';
                 const label = is_triggered ? <EuiBetaBadge size="s" label="true" iconType="check" className='success' /> : <EuiBetaBadge size="s" label="false" iconType="cross" className='danger' />;
@@ -138,7 +138,7 @@ const FutureOrderDataGridTable = ({ orderData }) => {
             }
         },
         {
-            field: 'is_missed', name: 'Is Missed',
+            field: 'is_missed', name: 'Missed',
             render: (is_missed) => {
                 const color = is_missed ? 'success' : 'danger';
                 const label = is_missed ? <EuiBetaBadge size="s" label="true" iconType="check" className='success' /> : <EuiBetaBadge size="s" label="false" iconType="cross" className='danger' />;
@@ -148,7 +148,7 @@ const FutureOrderDataGridTable = ({ orderData }) => {
             }
         },
         {
-            field: 'is_entry_on', name: 'Is Entry On',
+            field: 'is_entry_on', name: 'Entry On',
             render: (is_entry_on) => {
                 const color = is_entry_on ? 'success' : 'danger';
                 const label = is_entry_on ? <EuiBetaBadge size="s" label="true" iconType="check" className='success' /> : <EuiBetaBadge size="s" label="false" iconType="cross" className='danger' />;
@@ -359,7 +359,6 @@ const FutureOrderDataGridTable = ({ orderData }) => {
                 entry_date: formatDate(row.entry_date),
                 // Add more fields as needed
             }));
-            console.log("rowrowrowrow", selectedItems)
             // Extract selected rows and convert to CSV format
             const csvData = formattedRows.map(row =>
             // Map each row to an object containing all fields

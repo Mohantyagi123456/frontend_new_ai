@@ -357,7 +357,6 @@ const FutureOrderDataGridTable = ({ orderData }) => {
                 entry_date: formatDate(row.entry_date),
                 // Add more fields as needed
             }));
-            console.log("rowrowrowrow", selectedItems)
             // Extract selected rows and convert to CSV format
             const csvData = formattedRows.map(row =>
             // Map each row to an object containing all fields

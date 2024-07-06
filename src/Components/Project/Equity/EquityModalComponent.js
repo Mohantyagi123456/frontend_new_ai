@@ -28,7 +28,6 @@ const ExampleForm = ({ id, initialStatusData, handleSave, handleCancel }) => {
     // is_changed: initialStatusData.is_changed || false,
   });
 
-  console.log("formDataformData",formData)
 
   const handleFormChange = (field, value) => {
     setFormData((prevData) => ({
@@ -123,7 +122,6 @@ const EquityModalComponent = ({
   const modalTitleId = useGeneratedHtmlId();
 
   const handleSave = (formData) => {
-    console.log('Saved data', formData);
     closeUpdateModal();
   };
 

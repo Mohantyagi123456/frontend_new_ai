@@ -55,7 +55,6 @@ const EquityDataGridTable = ({ userData }) => {
     const showModal = () => setIsModalVisible(true);
     const openExportModal = () => setExportModalOpen(true)
     const closeExportModal = () => setExportModalOpen(false);
-    console.log("isModalUpdateVisible", userData)
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         const year = date.getFullYear();
@@ -258,7 +257,6 @@ const EquityDataGridTable = ({ userData }) => {
 
         const startIndex = pageIndex * pageSize;
         const pageOfItems = items.slice(startIndex, startIndex + pageSize);
-        console.log("pageOfItems",pageOfItems)
 
         return {
             pageOfItems,
@@ -300,7 +298,6 @@ const EquityDataGridTable = ({ userData }) => {
     };
 
     const onSelectionChange = (selectedItems) => {
-        console.log("selectedItems", selectedItems)
         setSelectedItems(selectedItems);
     };
 
@@ -321,7 +318,6 @@ const EquityDataGridTable = ({ userData }) => {
                 entry_date: formatDate(row.entry_date),
                 // Add more fields as needed
             }));
-            console.log("rowrowrowrow",selectedItems)
             // Extract selected rows and convert to CSV format
             const csvData = formattedRows.map(row =>
             // Map each row to an object containing all fields

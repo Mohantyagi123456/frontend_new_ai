@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Comparators,
   EuiBasicTable,
@@ -7,6 +7,7 @@ import {
   EuiFlexGroup,
   EuiFlexItem,
   EuiSpacer,
+  EuiButtonEmpty,
   EuiFieldSearch,
   EuiFormRow,
   EuiSelect,
@@ -39,12 +40,12 @@ const CustomTable = ({ userData }) => {
   const [isModalUpdateVisible, setIsModalUpdateVisible] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]); // New state for selected items
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const[statusData,setStatusData]= useState("")
+  const [statusData, setStatusData] = useState("")
   const closeUpdateModal = () => setIsModalUpdateVisible(false);
   const showUpdateModal = () => setIsModalUpdateVisible(true);
   const closeModal = () => setIsModalVisible(false);
   const showModal = () => setIsModalVisible(true);
-console.log("isModalUpdateVisible",isModalUpdateVisible)
+  console.log("isModalUpdateVisible", isModalUpdateVisible)
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const year = date.getFullYear();
@@ -64,21 +65,21 @@ console.log("isModalUpdateVisible",isModalUpdateVisible)
   function NewformatDate(date) {
     return date.toString().split(' GMT')[0];
   }
-  
+
   useEffect(() => {
     if (userData.length > 0) {
       const latestDate = userData.reduce((maxDate, user) => {
         const currentDate = new Date(user.last_run_dt);
         return currentDate > maxDate ? currentDate : maxDate;
       }, new Date(0));
-console.log("latestDate",latestDate)
+      console.log("latestDate", latestDate)
       setLastRunDate(NewformatDate(latestDate)); // Assuming formatDate function is defined as in your original code
     }
   }, [userData]);
-const updateStatusDetails=(data)=>{
-  showUpdateModal()
-  setStatusData(data)
-}
+  const updateStatusDetails = (data) => {
+    showUpdateModal()
+    setStatusData(data)
+  }
   const columns = [
     {
       field: 'symbol',
@@ -161,9 +162,9 @@ const updateStatusDetails=(data)=>{
       name: 'Action',
       truncateText: true,
       render: (user) => {
-        return <EuiButtonIcon display="base" onClick={()=>updateStatusDetails(user)} iconType="pencil" size="xs" aria-label="Next"/>
+        return <EuiButtonIcon display="base" onClick={() => updateStatusDetails(user)} iconType="pencil" size="xs" aria-label="Next" />
       }
-      
+
     },
   ];
 
@@ -172,7 +173,7 @@ const updateStatusDetails=(data)=>{
     setPageIndex(0); // Reset pageIndex when search changes
   };
 
-  
+
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -299,33 +300,28 @@ const updateStatusDetails=(data)=>{
 
   return (
     <>
+      <EuiBadge>
+        Last Update: {lastRunDate}
+      </EuiBadge>
+      <p></p>
       <EuiFlexGroup alignItems="center">
-        <EuiFlexItem grow={false}>
+        <EuiFlexItem>
           <EuiFieldSearch
-            placeholder="Search by name"
+            placeholder="Search by symbol"
             value={searchValue}
             onChange={handleSearchChange}
-            fullWidth
+            isClearable={true}
+            aria-label="Search by symbol"
           />
         </EuiFlexItem>
-        <EuiFlexItem grow={false} style={{ marginLeft: 'auto', marginRight: '-150px' ,fontWeight:"700"}}>
-          <div>
-            Last Update : {lastRunDate}
-          </div>
-        </EuiFlexItem>
-        <div style={{ marginLeft: "50%", display: "flex", marginTop: "5px" }}>
-          <EuiFlexItem grow={false} onClick={showModal}>
-            <EuiBadge color="subdued">
-              <EuiIcon type="filter" /> &nbsp;Filter
-            </EuiBadge>
-          </EuiFlexItem>
-          &nbsp; &nbsp;
-          <EuiFlexItem grow={false} onClick={handleClearFilters}>
-            <EuiBadge color="primary" size="m">
-              <EuiIcon type="filterIgnore" /> &nbsp;Clear Filter
-            </EuiBadge>
-          </EuiFlexItem>
-        </div>
+        <EuiFlexItem grow={false}>
+                    <EuiButton onClick={showModal} iconType="filter">
+                        Filters
+                    </EuiButton>
+                </EuiFlexItem>
+                <EuiFlexItem grow={false}>
+                    <EuiButtonEmpty onClick={handleClearFilters}>Clear Filters</EuiButtonEmpty>
+                </EuiFlexItem>
       </EuiFlexGroup>
       <EuiSpacer size="l" />
       <EuiBasicTable
@@ -387,10 +383,10 @@ const updateStatusDetails=(data)=>{
               </EuiButton>
             </EuiModalFooter>
           </EuiModal>
-         
+
         </EuiOverlayMask>
       )}
-      <StatusModalComponent statusData={statusData != undefined?statusData:""} isModalUpdateVisible={isModalUpdateVisible} setIsModalUpdateVisible={setIsModalUpdateVisible} closeUpdateModal={closeUpdateModal} showUpdateModal={showUpdateModal} />
+      <StatusModalComponent statusData={statusData != undefined ? statusData : ""} isModalUpdateVisible={isModalUpdateVisible} setIsModalUpdateVisible={setIsModalUpdateVisible} closeUpdateModal={closeUpdateModal} showUpdateModal={showUpdateModal} />
     </>
   );
 };

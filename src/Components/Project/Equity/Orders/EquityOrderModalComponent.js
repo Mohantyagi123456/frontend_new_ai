@@ -121,7 +121,7 @@ const EquityOrderModalComponent = ({
         >
           <EuiModalHeader >
             <EuiModalHeaderTitle id={modalTitleId} className='moadlHeading'>
-             Equity Details of {ordersData.symbol}
+             Equity order of {ordersData.trading_symbol}
             </EuiModalHeaderTitle>
           </EuiModalHeader>
           <EuiModalBody>

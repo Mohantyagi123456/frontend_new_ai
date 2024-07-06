@@ -22,10 +22,11 @@ import {
   EuiModalHeaderTitle,
   EuiOverlayMask,
 } from '@elastic/eui';
+import { useNavigate, useLocation } from 'react-router-dom';
 import UsersModalComponent from './UsersModalComponent';
 
 const CustomTable = ({ userData }) => {
-  console.log("hjhjhjhjhjhj",userData)
+  const navigate = useNavigate();
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [sortField, setSortField] = useState('firstName');
@@ -75,12 +76,21 @@ const updateStatusDetails=(data)=>{
   showUpdateModal()
   setUsersData(data)
 }
+const gotToDetails = (user,item)=>{
+  console.log("user,item",user,item)
+  navigate(`/all-users/details/${item.id}`, {state:item});
+}
   const columns = [
     {
       field: 'full_name',
       name: 'Full Name',
       truncateText: true,
       sortable: true,
+      render: (user, item) => (
+        <EuiLink onClick={(user)=>{gotToDetails(user,item)}}>
+            {user}
+        </EuiLink>
+    ),
       mobileOptions: {
         render: (user) => (
           <EuiLink href="#" target="_blank">

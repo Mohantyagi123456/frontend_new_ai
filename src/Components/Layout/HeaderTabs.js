@@ -28,6 +28,26 @@ const HeaderTabs = () => {
       name: <div  className={`${location.pathname == "/net-positions" ?"activeness":""}`}>Net-Positions</div>,
 
     },
+    {
+      id: 'orders',
+      path: '/orders-list',
+      name: <div  className={`${location.pathname == "/orders-list"  ?"activeness":""}`}>Orders</div>,
+    },
+    {
+      id: 'holdings',
+      path: '/holding-list',
+      name: <div  className={`${location.pathname == "/holding-list"  ?"activeness":""}`}>Holdings</div>,
+    },
+    {
+      id: 'bids',
+      path: '/bids-list',
+      name: <div  className={`${location.pathname == "/bids-list"  ?"activeness":""}`}>Bids</div>,
+    },
+    {
+      id: 'funds',
+      path: '/fund-list',
+      name: <div  className={`${location.pathname == "/fund-list"  ?"activeness":""}`}>Funds</div>,
+    },
   ];
 
   useEffect(() => {

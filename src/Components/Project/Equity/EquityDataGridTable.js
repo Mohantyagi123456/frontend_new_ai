@@ -37,25 +37,26 @@ const EquityDataGridTable = ({ userData }) => {
     const [sortField, setSortField] = useState('firstName');
     const [sortDirection, setSortDirection] = useState('asc');
     const [searchValue, setSearchValue] = useState('');
-    const [gtdDate, setGtdDate] = useState(moment())
+    const [gtdDate, setGtdDate] = useState(moment());
     const [filterOption, setFilterOption] = useState({
         current_status: '',
         previous_status: '',
         is_changed: '',
+        cc_date_range: 'all',
+        trade_status: ""
     });
     const [lastRunDate, setLastRunDate] = useState('');
     const [isModalUpdateVisible, setIsModalUpdateVisible] = useState(false);
     const [selectedItems, setSelectedItems] = useState([]); // New state for selected items
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [exportModalOpen, setExportModalOpen] = useState(false)
-    const [statusData, setStatusData] = useState("")
+    const [exportModalOpen, setExportModalOpen] = useState(false);
+    const [statusData, setStatusData] = useState('');
     const closeUpdateModal = () => setIsModalUpdateVisible(false);
     const showUpdateModal = () => setIsModalUpdateVisible(true);
     const closeModal = () => setIsModalVisible(false);
     const showModal = () => setIsModalVisible(true);
-    const openExportModal = () => setExportModalOpen(true)
+    const openExportModal = () => setExportModalOpen(true);
     const closeExportModal = () => setExportModalOpen(false);
-    console.log("isModalUpdateVisible", userData)
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         const year = date.getFullYear();
@@ -86,8 +87,12 @@ const EquityDataGridTable = ({ userData }) => {
         }
     }, [userData]);
     const updateStatusDetails = (data) => {
-        showUpdateModal()
-        setStatusData(data)
+        showUpdateModal();
+        setStatusData(data);
+    };
+    const gotToDetails = (user,item)=>{
+        console.log("user,item",user,item)
+        navigate('/equity/details', {state:item });
     }
     const columns = [
         {
@@ -95,13 +100,19 @@ const EquityDataGridTable = ({ userData }) => {
             name: 'Symbol',
             truncateText: true,
             sortable: true,
+            render: (user, item) => (
+                <EuiLink onClick={(user)=>{gotToDetails(user,item)}}>
+                    {user}
+                </EuiLink>
+            ),
             mobileOptions: {
                 render: (user) => (
-                    <EuiLink href="#" target="_blank">
+                    <EuiLink onClick={(user)=>{gotToDetails(user)}}>
                         {user.symbol}
                     </EuiLink>
                 ),
             },
+            
         },
         {
             field: 'version',
@@ -130,15 +141,6 @@ const EquityDataGridTable = ({ userData }) => {
                 show: false,
             },
         },
-        // {
-        //   field: 'ath_date',
-        //   name: 'ATH Date',
-        //   truncateText: true,
-        //   sortable: true,
-        //   mobileOptions: {
-        //     show: false,
-        //   },
-        // },
         {
             field: 'ath_date',
             name: 'ATH Date',
@@ -161,34 +163,21 @@ const EquityDataGridTable = ({ userData }) => {
             sortable: true,
             render: (entry_date) => formatDate(entry_date),
         },
-
-        // {
-        //   field: 'is_changed',
-        //   name: 'is_changed',
-        //   dataType: 'boolean',
-        //   render: (is_changed) => {
-        //     const color = is_changed ? 'success' : 'danger';
-        //     const label = is_changed ? <EuiBetaBadge size="s" label="true" iconType="check" className='success' /> : <EuiBetaBadge size="s" label="false" iconType="cross" className='danger' />;
-        //     return <EuiFlexItem grow={false}>
-        //       {label}
-        //     </EuiFlexItem>;
-        //   },
-        //   sortable: true,
-        // },
         {
             field: '',
             name: 'Action',
             truncateText: true,
             render: (user) => {
-                return <EuiButtonIcon display="base" onClick={() => updateStatusDetails(user)} iconType="pencil" size="xs" aria-label="Next" />
-            }
-            // sortable: true,
-            // mobileOptions: {
-            //   render: (user) => (
-
-            //     <button>ff</button>
-            //   ),
-            // },
+                return (
+                    <EuiButtonIcon
+                        display="base"
+                        onClick={() => updateStatusDetails(user)}
+                        iconType="pencil"
+                        size="xs"
+                        aria-label="Next"
+                    />
+                );
+            },
         },
     ];
 
@@ -196,8 +185,6 @@ const EquityDataGridTable = ({ userData }) => {
         setSearchValue(e.target.value);
         setPageIndex(0); // Reset pageIndex when search changes
     };
-
-
 
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
@@ -212,6 +199,8 @@ const EquityDataGridTable = ({ userData }) => {
         setFilterOption({
             current_status: '',
             is_changed: '',
+            cc_date_range: 'all',
+            trade_status: ''
         });
         setSearchValue('');
         setPageIndex(0); // Reset pageIndex when filters are cleared
@@ -222,21 +211,55 @@ const EquityDataGridTable = ({ userData }) => {
         { text: 'All', value: '' },
         { text: 'DCC', value: 'DCC' },
         { text: 'WCC', value: 'WCC' },
-        { text: 'MCC', value: 'MCC' }
+        { text: 'MCC', value: 'MCC' },
     ];
-    // const ByPreviousStatus = [
-    //     { text: 'All', value: '' },
-    //     { text: 'bull_cf', value: 'bull_cf' },
-    //     { text: 'bear_cf', value: 'bear_cf' },
-    //     { text: 'bull', value: 'bull' },
-    //     { text: 'bear', value: 'bear' },
-    // ];
 
-    // const ByIsChanged = [
-    //     { value: '', text: 'Select change status' },
-    //     { value: 'true', text: 'True' },
-    //     { value: 'false', text: 'False' },
-    // ];
+    const ByDateRange = [
+        { text: 'All', value: 'all' },
+        { text: 'Today', value: 'today' },
+        { text: '1 Week', value: '1week' },
+        { text: '1 Month', value: '1month' },
+        { text: '1 Year', value: '1year' },
+    ];
+
+    const ByOrderType = [
+        { text: 'All', value: '' },
+        { text: 'Entry', value: 'Entry' },
+        { text: 'Target 1', value: 'Target 1' },
+        { text: 'Target 2', value: 'Target 2' },
+        { text: 'Target 3', value: 'Target 3' },
+        { text: 'Target 4', value: 'Target 4' },
+        { text: 'Target 5', value: 'Target 5' },
+        { text: 'CC Formed', value: 'CC_FORMED' },
+        { text: 'SL', value: 'SL' }
+
+    ];
+
+    const filterByDateRange = (items) => {
+        if (filterOption.cc_date_range === 'all') return items;
+
+        const today = moment().startOf('day');
+        let selectedDateRange;
+
+        switch (filterOption.cc_date_range) {
+            case 'today':
+                selectedDateRange = today;
+                break;
+            case '1week':
+                selectedDateRange = today.subtract(1, 'week');
+                break;
+            case '1month':
+                selectedDateRange = today.subtract(1, 'month');
+                break;
+            case '1year':
+                selectedDateRange = today.subtract(1, 'year');
+                break;
+            default:
+                selectedDateRange = null;
+        }
+
+        return items.filter((item) => moment(item.cc_date).isSameOrAfter(selectedDateRange));
+    };
 
     const findUsers = (users, pageIndex, pageSize, sortField, sortDirection) => {
         let items = [...users];
@@ -250,7 +273,6 @@ const EquityDataGridTable = ({ userData }) => {
             items = items.filter(
                 (user) =>
                     user.symbol.toLowerCase() === normalizedSearchValue
-
             );
         }
 
@@ -258,9 +280,14 @@ const EquityDataGridTable = ({ userData }) => {
             items = items.filter((user) => user.version === filterOption.version);
         }
 
+        if (filterOption.trade_status) {
+            items = items.filter((user) => user.trade_status === filterOption.trade_status);
+        }
+
+        items = filterByDateRange(items);
+
         const startIndex = pageIndex * pageSize;
         const pageOfItems = items.slice(startIndex, startIndex + pageSize);
-        console.log("pageOfItems", pageOfItems)
 
         return {
             pageOfItems,
@@ -293,16 +320,22 @@ const EquityDataGridTable = ({ userData }) => {
     const onTableChange = ({ page = {}, sort = {} }) => {
         const { index: pageIndex, size: pageSize } = page;
 
-        setPageIndex(pageIndex || 0);
-        setPageSize(pageSize || 10);
-        if (sort.field) {
-            setSortField(sort.field);
-            setSortDirection(sort.direction);
-        }
+        const { field: sortField, direction: sortDirection } = sort;
+
+        setPageIndex(pageIndex);
+        setPageSize(pageSize);
+        setSortField(sortField);
+        setSortDirection(sortDirection);
+    };
+
+
+
+    const handleFormSubmit = (e) => {
+        e.preventDefault();
+        closeModal();
     };
 
     const onSelectionChange = (selectedItems) => {
-        console.log("selectedItems", selectedItems)
         setSelectedItems(selectedItems);
     };
 
@@ -323,11 +356,10 @@ const EquityDataGridTable = ({ userData }) => {
                 entry_date: formatDate(row.entry_date),
                 // Add more fields as needed
             }));
-            console.log("rowrowrowrow", selectedItems)
             // Extract selected rows and convert to CSV format
             const csvData = formattedRows.map(row =>
             // Map each row to an object containing all fields
-            console.log("rowrow",row)
+
             ({
                 'exchange': 'NSE',
                 'ScripCode': row.exchange_token,
@@ -372,63 +404,53 @@ const EquityDataGridTable = ({ userData }) => {
 
     };
     const handleExportSubmit = (e) => {
-        e.preventDefault();
+        // alert("hh")
+        // e.preventDefault();
         closeExportModal()
         if (customerIdData != "") {
+            alert("hh")
             handleExportCSV()
         }
     }
-
-
     const AddtoWatchlist = () => {
         navigate('/watch-list', { state: { selectedItems, form: "equityAnalysis" } });
     }
 
 
+
+
+    console.log("statusData,", statusData)
+
     return (
-        <>
+        <div>
+            <EuiBadge>
+                Last Update: {lastRunDate}
+            </EuiBadge>
+            <p></p>
             <EuiFlexGroup alignItems="center">
-                <EuiFlexItem grow={false}>
+                <EuiFlexItem>
                     <EuiFieldSearch
-                        placeholder="Search by name"
+                        placeholder="Search by symbol"
                         value={searchValue}
                         onChange={handleSearchChange}
-                        fullWidth
+                        isClearable={true}
+                        aria-label="Search by symbol"
                     />
                 </EuiFlexItem>
-                <EuiFlexItem grow={true} style={{ marginLeft: 'auto',marginRight:"-425px", fontWeight: "700" }}>
-                    <div>
-                        Last Update : {lastRunDate}
-                    </div>
+                <EuiFlexItem grow={false}>
+                    <EuiButton onClick={showModal} iconType="filter">
+                        Filters
+                    </EuiButton>
+                </EuiFlexItem>
+                <EuiFlexItem grow={false}>
+                    <EuiButton onClick={() => selectedItems.length != 0 ? AddtoWatchlist() : ""} iconType="plus" isDisabled={selectedItems.length != 0 ? false : true}>
+                        Add to Watchlist
+                    </EuiButton>
                 </EuiFlexItem>
 
-                <div style={{ marginLeft: "50%", display: "flex", marginTop: "5px" }}>
-                    <EuiFlexItem grow={false} style={{ fontWeight: "700" }} onClick={() => selectedItems.length != 0 ? AddtoWatchlist() : ""}>
-                        <EuiBadge color="success" isDisabled={selectedItems.length != 0 ? false : true}>
-                            <EuiIcon type="plus" /> &nbsp;Add to Watchlist
-                        </EuiBadge>
-
-                    </EuiFlexItem>
-                    &nbsp; &nbsp;
-                    <EuiFlexItem grow={false} style={{ fontWeight: "700" }} onClick={() => selectedItems.length != 0 ? openExportModal() : ""}>
-                        <EuiBadge color="subdued" isDisabled={selectedItems.length != 0 ? false : true}>
-                            <EuiIcon type="download" /> &nbsp;Download Files
-                        </EuiBadge>
-
-                    </EuiFlexItem>
-                    &nbsp; &nbsp;
-                    <EuiFlexItem grow={false} onClick={showModal}>
-                        <EuiBadge color="subdued">
-                            <EuiIcon type="filter" /> &nbsp;Filter
-                        </EuiBadge>
-                    </EuiFlexItem>
-                    &nbsp; &nbsp;
-                    <EuiFlexItem grow={false} onClick={handleClearFilters}>
-                        <EuiBadge color="primary" size="m">
-                            <EuiIcon type="filterIgnore" /> &nbsp;Clear Filter
-                        </EuiBadge>
-                    </EuiFlexItem>
-                </div>
+                <EuiFlexItem grow={false}>
+                    <EuiButtonEmpty onClick={handleClearFilters}>Clear Filters</EuiButtonEmpty>
+                </EuiFlexItem>
             </EuiFlexGroup>
             <EuiSpacer size="l" />
             <EuiBasicTable
@@ -441,25 +463,53 @@ const EquityDataGridTable = ({ userData }) => {
                 pagination={pagination}
                 selection={selection}
             />
+
             {isModalVisible && (
                 <EuiOverlayMask>
                     <EuiModal onClose={closeModal}>
                         <EuiModalHeader>
-                            <EuiModalHeaderTitle>Filters</EuiModalHeaderTitle>
+                            <EuiModalHeaderTitle>Filter</EuiModalHeaderTitle>
                         </EuiModalHeader>
                         <EuiModalBody>
-                            <EuiFlexGroup>
-                                <EuiFlexItem>
-                                    <EuiFormRow label="Filter by Version">
-                                        <EuiSelect
-                                            name="version"
-                                            options={ByVersion}
-                                            value={filterOption.version}
-                                            onChange={handleFilterChange}
-                                        />
-                                    </EuiFormRow>
-                                </EuiFlexItem>
-                            </EuiFlexGroup>
+                            <EuiForm component="form" onSubmit={handleFormSubmit}>
+                                <EuiFlexGroup>
+                                    <EuiFlexItem>
+                                        <EuiFormRow label="Version">
+                                            <EuiSelect
+                                                name="version"
+                                                value={filterOption.version}
+                                                options={ByVersion}
+                                                onChange={handleFilterChange}
+                                            />
+                                        </EuiFormRow>
+                                    </EuiFlexItem>
+                                    <EuiFlexItem>
+                                        <EuiFormRow label="CC Date Range">
+                                            <EuiSelect
+                                                name="cc_date_range"
+                                                value={filterOption.cc_date_range}
+                                                options={ByDateRange}
+                                                onChange={handleFilterChange}
+                                            />
+                                        </EuiFormRow>
+                                    </EuiFlexItem>
+                                    <EuiFlexItem>
+                                        <EuiFormRow label="OrderType">
+                                            <EuiSelect
+                                                name="trade_status"
+                                                value={filterOption.trade_status}
+                                                options={ByOrderType}
+                                                onChange={handleFilterChange}
+                                            />
+                                        </EuiFormRow>
+                                    </EuiFlexItem>
+                                 
+
+                                </EuiFlexGroup>
+
+                                <EuiSpacer />
+                           
+                            </EuiForm>
                         </EuiModalBody>
                         <EuiModalFooter>
                             <EuiButton onClick={handleClearFilters} color="danger">
@@ -470,52 +520,17 @@ const EquityDataGridTable = ({ userData }) => {
                             </EuiButton>
                         </EuiModalFooter>
                     </EuiModal>
-
                 </EuiOverlayMask>
             )}
 
-            {exportModalOpen && (
-                <EuiOverlayMask>
-                    <EuiModal onClose={closeExportModal}>
-                        <EuiModalHeader>
-                            <EuiModalHeaderTitle>Export Data In CSV Format</EuiModalHeaderTitle>
-                        </EuiModalHeader>
-                        <EuiModalBody>
-                            <EuiForm component="form" >
-                                <EuiFormRow label="Customer Id">
-                                    <EuiFieldText
-                                        name="customerId"
-                                        value={customerIdData}
-                                        onChange={(e) => setCustomerIdData(e.target.value)}
-                                    />
-                                </EuiFormRow>
-                                <EuiFormRow label="Select Date">
-                                    <EuiDatePicker
-                                        selected={gtdDate}
-                                        onChange={date => setGtdDate(date ? moment(date) : null)}
-                                    />
-                                </EuiFormRow>
-                            </EuiForm>
-
-                        </EuiModalBody>
-                        <EuiModalFooter>
-                            <EuiButtonEmpty onClick={closeExportModal}>Cancel</EuiButtonEmpty>
-                            <EuiButton
-                                type="submit"
-                                // form={modalFormId}
-                                onClick={handleExportSubmit}
-                                fill
-                            >
-                                Save
-                            </EuiButton>
-                        </EuiModalFooter>
-                    </EuiModal>
-
-                </EuiOverlayMask>
+            {isModalUpdateVisible && (
+                <EquityModalComponent statusData={statusData}
+                    isModalUpdateVisible={isModalUpdateVisible} setIsModalUpdateVisible={setIsModalUpdateVisible} closeUpdateModal={closeUpdateModal} showUpdateModal={showUpdateModal}
+                />
             )}
+            <EuiSpacer size="l" />
 
-            <EquityModalComponent statusData={statusData != undefined ? statusData : ""} isModalUpdateVisible={isModalUpdateVisible} setIsModalUpdateVisible={setIsModalUpdateVisible} closeUpdateModal={closeUpdateModal} showUpdateModal={showUpdateModal} />
-        </>
+        </div>
     );
 };
 
