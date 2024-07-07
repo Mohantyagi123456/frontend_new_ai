@@ -14,9 +14,9 @@ import SignupForm from './Components/Auth/SignupForm';
 const App = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const KiteId = JSON.parse(localStorage.getItem('userData'));
-  const headers = {
-    'Authorization': `Bearer ${KiteId?.access}`
-  };
+  // const headers = {
+  //   'Authorization': `Bearer ${KiteId?.access}`
+  // };
 
   const theme = localStorage.getItem("theme")
   console.log("themethemethemetheme", theme)
@@ -174,9 +174,10 @@ const App = () => {
   useEffect(() => {
     const fetchData = async () => {
       clearAllStores();
+      console.log("KiteIdKiteId",KiteId?.access)
       try {
         const headers = {
-          'Authorization': `Bearer ${KiteId?.access}`
+          'Authorization': `Bearer ${KiteId?.access != undefined ?KiteId?.access:KiteId?.access_token}`
         };
         const baseUrl = process.env.REACT_APP_BASE_URL;
   

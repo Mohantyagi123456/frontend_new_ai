@@ -16,25 +16,25 @@ import bright_logo from '../assests/bright_logo.jpeg';
 const SignupForm = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    username: '',
-    first_name: '',
-    last_name: '',
-    email: '',
-    password: '',
-    pan_card: '',
-    aadhaar_card: '',
-    bio: '',
+    username: null,
+    first_name: null,
+    last_name: null,
+    email: null,
+    password: null,
+    pan_card: null,
+    aadhaar_card: null,
+    bio: "",
     contact: {
-      contact: '',
+      contact: null,
       is_active: true,
       is_permanent: true,
       is_verified: false,
     },
     address: {
-      house_num: '',
-      street: '',
-      city: '',
-      pincode: '',
+      house_num: null,
+      street: null,
+      city: null,
+      pincode: null,
       is_active: true,
       is_permanent: true,
       is_verified: false,
@@ -71,7 +71,7 @@ const SignupForm = () => {
       console.log('Signup successful!', res);
       localStorage.setItem('userData', JSON.stringify(res));
       localStorage.setItem('login', true);
-      localStorage.setItem('donotCallApi', true);
+      localStorage.setItem('donotCallApi', false);
       setTimeout(() => {
         navigate('/');
       }, 1000);

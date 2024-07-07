@@ -15,7 +15,8 @@ import { render } from '@testing-library/react';
 
 const FutureDataGridTable = ({ userData }) => {
     const navigate = useNavigate();
-    const dataSource = Object.keys(userData).map((key, index) => ({
+    const jj = userData != undefined || userData != null ?userData:[]
+    const dataSource = Object.keys(jj).map((key, index) => ({
         key: index,
         name: key,
         details: userData[key]
