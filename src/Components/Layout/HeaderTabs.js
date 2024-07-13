@@ -38,11 +38,11 @@ const HeaderTabs = () => {
       path: '/holding-list',
       name: <div  className={`${location.pathname == "/holding-list"  ?"activeness":""}`}>Holdings</div>,
     },
-    {
-      id: 'bids',
-      path: '/bids-list',
-      name: <div  className={`${location.pathname == "/bids-list"  ?"activeness":""}`}>Bids</div>,
-    },
+    // {
+    //   id: 'bids',
+    //   path: '/bids-list',
+    //   name: <div  className={`${location.pathname == "/bids-list"  ?"activeness":""}`}>Bids</div>,
+    // },
     {
       id: 'funds',
       path: '/fund-list',

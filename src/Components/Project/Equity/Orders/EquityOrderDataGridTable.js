@@ -36,12 +36,12 @@ const EquityOrderDataGridTable = ({ orderData }) => {
     const [sortField, setSortField] = useState('trading_symbol');
     const [sortDirection, setSortDirection] = useState('asc');
     const [searchValue, setSearchValue] = useState('');
-    const [gtdDate,setGtdDate] = useState(moment())
+    const [gtdDate, setGtdDate] = useState(moment())
     const [filterOption, setFilterOption] = useState({
         current_status: '',
         previous_status: '',
         is_changed: '',
-        triggered_at:'all'
+        triggered_at: 'all'
     });
     const [lastRunDate, setLastRunDate] = useState('');
     const [isModalUpdateVisible, setIsModalUpdateVisible] = useState(false);
@@ -129,12 +129,12 @@ const EquityOrderDataGridTable = ({ orderData }) => {
             },
         },
         {
-          field: 'triggered_at',
-          name: 'Triggered Date',
-          truncateText: true,
-          sortable: true,
-          render: (triggered_at) => formatDate(triggered_at),
-         
+            field: 'triggered_at',
+            name: 'Triggered Date',
+            truncateText: true,
+            sortable: true,
+            render: (triggered_at) => formatDate(triggered_at),
+
         },
         {
             field: 'created_at',
@@ -190,7 +190,7 @@ const EquityOrderDataGridTable = ({ orderData }) => {
         setPageIndex(0); // Reset pageIndex when filters are cleared
         closeModal();
     };
-    
+
 
     const ByVersion = [
         { text: 'All', value: '' },
@@ -208,7 +208,7 @@ const EquityOrderDataGridTable = ({ orderData }) => {
         { text: 'Target 5', value: 'Target 5' },
         { text: 'CC Formed', value: 'CC_FORMED' },
         { text: 'SL', value: 'SL' }
-       
+
     ];
 
     const ByDateRange = [
@@ -221,10 +221,10 @@ const EquityOrderDataGridTable = ({ orderData }) => {
 
     const filterByDateRange = (items) => {
         if (filterOption.triggered_at === 'all') return items;
-    
+
         const today = moment().startOf('day');
         let selectedDateRange;
-    
+
         switch (filterOption.triggered_at) {
             case 'today':
                 selectedDateRange = today;
@@ -241,10 +241,10 @@ const EquityOrderDataGridTable = ({ orderData }) => {
             default:
                 selectedDateRange = null;
         }
-    
+
         return items.filter((item) => moment(item.triggered_at).isSameOrAfter(selectedDateRange));
     };
-    
+
 
     const findUsers = (users, pageIndex, pageSize, sortField, sortDirection) => {
         let items = [...users];
@@ -361,11 +361,11 @@ const EquityOrderDataGridTable = ({ orderData }) => {
                 'Exchange': 'NSE',
                 'ScripCode': row?.current_status?.instruments?.exchange_token,
                 'ScripName': row?.trading_symbol,
-                'OrderPrice':  row?.buy_sell=== "BUY" ? addFivePercent(row?.trigger):subtractFivePercent(row?.trigger),
-                "TriggerPrice":  row?.trigger,   
-                "OrderQty":row?.quantity,
+                'OrderPrice': row?.buy_sell === "BUY" ? addFivePercent(row?.trigger) : subtractFivePercent(row?.trigger),
+                "TriggerPrice": row?.trigger,
+                "OrderQty": row?.quantity,
                 "DisclosedQty": 0,
-                "BuySell": row?.buy_sell ? row?.buy_sell:"BUY",
+                "BuySell": row?.buy_sell ? row?.buy_sell : "BUY",
                 "OrderType": "NEW",
                 "RMS": "",
                 "PriceType": "LIMIT",
@@ -374,7 +374,7 @@ const EquityOrderDataGridTable = ({ orderData }) => {
                 "OrderID": 0,
                 "ExecQty": 0,
                 "ExecPrice": 0,
-                "OrderValid":"GFD",
+                "OrderValid": "GFD",
                 "GTDDate": gtdDate.format('YYYY-MM-DD')
             })
             );
@@ -407,9 +407,9 @@ const EquityOrderDataGridTable = ({ orderData }) => {
             handleExportCSV()
         }
     }
-    const AddtoWatchlist = ()=>{
+    const AddtoWatchlist = () => {
         console.log("selectedItemsselectedItems", selectedItems)
-        navigate('/watch-list', { state: { selectedItems ,form:"equityOrders"} });
+        navigate('/watch-list', { state: { selectedItems, form: "equityOrders" } });
     }
 
 
@@ -417,7 +417,7 @@ const EquityOrderDataGridTable = ({ orderData }) => {
     return (
         <>
             <EuiFlexGroup alignItems="center">
-            <EuiFlexItem>
+                <EuiFlexItem>
                     <EuiFieldSearch
                         placeholder="Search by symbol"
                         value={searchValue}
@@ -438,7 +438,7 @@ const EquityOrderDataGridTable = ({ orderData }) => {
                 </EuiFlexItem>
                 <EuiFlexItem grow={false}>
                     <EuiButton onClick={() => selectedItems.length != 0 ? openExportModal() : ""} iconType="download" isDisabled={selectedItems.length != 0 ? false : true}>
-                    Download Files
+                        Download Files
                     </EuiButton>
                 </EuiFlexItem>
 
@@ -467,7 +467,7 @@ const EquityOrderDataGridTable = ({ orderData }) => {
                         <EuiModalBody>
                             <EuiFlexGroup>
                                 <EuiFlexItem>
-                                    <EuiFormRow label="Filter by Version">
+                                    <EuiFormRow label="Version">
                                         <EuiSelect
                                             name="version"
                                             options={ByVersion}
@@ -475,20 +475,20 @@ const EquityOrderDataGridTable = ({ orderData }) => {
                                             onChange={handleFilterChange}
                                         />
                                     </EuiFormRow>
-                                    
+
                                 </EuiFlexItem>
                                 <EuiFlexItem>
-                                        <EuiFormRow label="Trigger Range">
-                                            <EuiSelect
-                                                name="triggered_at"
-                                                value={filterOption.triggered_at}
-                                                options={ByDateRange}
-                                                onChange={handleFilterChange}
-                                            />
-                                        </EuiFormRow>
-                                    </EuiFlexItem>
+                                    <EuiFormRow label="Trigger Range">
+                                        <EuiSelect
+                                            name="triggered_at"
+                                            value={filterOption.triggered_at}
+                                            options={ByDateRange}
+                                            onChange={handleFilterChange}
+                                        />
+                                    </EuiFormRow>
+                                </EuiFlexItem>
                                 <EuiFlexItem>
-                                <EuiFormRow label="by OrderType">
+                                    <EuiFormRow label="OrderType">
                                         <EuiSelect
                                             name="name"
                                             options={ByOrderType}

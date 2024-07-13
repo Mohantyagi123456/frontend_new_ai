@@ -127,3 +127,9 @@ tbody.css-0 {
   display: flex;
 
 } */
+span.euiLoadingSpinner.loader.css-10clatd-euiLoadingSpinner-xxl {
+  margin-top: 125px;
+  margin-left: 70px;
+  height: 70px;
+  width: 70px;
+}

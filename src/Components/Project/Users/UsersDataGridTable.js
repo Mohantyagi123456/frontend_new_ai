@@ -1,9 +1,9 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Comparators,
   EuiBasicTable,
   EuiLink,
-  EuiHealth,
+  EuiButtonEmpty,
   EuiFlexGroup,
   EuiFlexItem,
   EuiSpacer,
@@ -39,12 +39,12 @@ const CustomTable = ({ userData }) => {
   const [isModalUpdateVisible, setIsModalUpdateVisible] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]); // New state for selected items
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const[UsersData,setUsersData]= useState("")
+  const [UsersData, setUsersData] = useState("")
   const closeUpdateModal = () => setIsModalUpdateVisible(false);
   const showUpdateModal = () => setIsModalUpdateVisible(true);
   const closeModal = () => setIsModalVisible(false);
   const showModal = () => setIsModalVisible(true);
-console.log("isModalUpdateVisible",isModalUpdateVisible)
+  console.log("isModalUpdateVisible", isModalUpdateVisible)
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const year = date.getFullYear();
@@ -72,14 +72,14 @@ console.log("isModalUpdateVisible",isModalUpdateVisible)
       setLastRunDate(formatDate(latestDate)); // Assuming formatDate function is defined as in your original code
     }
   }, [userData]);
-const updateStatusDetails=(data)=>{
-  showUpdateModal()
-  setUsersData(data)
-}
-const gotToDetails = (user,item)=>{
-  console.log("user,item",user,item)
-  navigate(`/all-users/details/${item.id}`, {state:item});
-}
+  const updateStatusDetails = (data) => {
+    showUpdateModal()
+    setUsersData(data)
+  }
+  const gotToDetails = (user, item) => {
+    console.log("user,item", user, item)
+    navigate(`/all-users/details/${item.id}`, { state: item });
+  }
   const columns = [
     {
       field: 'full_name',
@@ -87,10 +87,10 @@ const gotToDetails = (user,item)=>{
       truncateText: true,
       sortable: true,
       render: (user, item) => (
-        <EuiLink onClick={(user)=>{gotToDetails(user,item)}}>
-            {user}
+        <EuiLink onClick={(user) => { gotToDetails(user, item) }}>
+          {user}
         </EuiLink>
-    ),
+      ),
       mobileOptions: {
         render: (user) => (
           <EuiLink href="#" target="_blank">
@@ -140,18 +140,18 @@ const gotToDetails = (user,item)=>{
       sortable: true,
     },
     {
-        field: 'date_joined',
-        name: 'Joining Date',
-        dataType: 'date',
-        sortable: true,
-        render: (date_joined) => formatDate(date_joined),
-      },
+      field: 'date_joined',
+      name: 'Joining Date',
+      dataType: 'date',
+      sortable: true,
+      render: (date_joined) => formatDate(date_joined),
+    },
     {
       field: '',
       name: 'Action',
       truncateText: true,
       render: (user) => {
-        return <EuiButtonIcon display="base" onClick={()=>updateStatusDetails(user)} iconType="pencil" size="xs" aria-label="Next"/>
+        return <EuiButtonIcon display="base" onClick={() => updateStatusDetails(user)} iconType="pencil" size="xs" aria-label="Next" />
       }
       // sortable: true,
       // mobileOptions: {
@@ -168,7 +168,7 @@ const gotToDetails = (user,item)=>{
     setPageIndex(0); // Reset pageIndex when search changes
   };
 
-  
+
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -188,18 +188,18 @@ const gotToDetails = (user,item)=>{
     closeModal();
   };
 
-//   const ByCurrentStatus = [
-//     { text: 'bull_cf', value: 'bull_cf' },
-//     { text: 'bear_cf', value: 'bear_cf' },
-//     { text: 'bull', value: 'bull' },
-//     { text: 'bear', value: 'bear' },
-//   ];
-//   const ByPreviousStatus = [
-//     { text: 'bull_cf', value: 'bull_cf' },
-//     { text: 'bear_cf', value: 'bear_cf' },
-//     { text: 'bull', value: 'bull' },
-//     { text: 'bear', value: 'bear' },
-//   ];
+  //   const ByCurrentStatus = [
+  //     { text: 'bull_cf', value: 'bull_cf' },
+  //     { text: 'bear_cf', value: 'bear_cf' },
+  //     { text: 'bull', value: 'bull' },
+  //     { text: 'bear', value: 'bear' },
+  //   ];
+  //   const ByPreviousStatus = [
+  //     { text: 'bull_cf', value: 'bull_cf' },
+  //     { text: 'bear_cf', value: 'bear_cf' },
+  //     { text: 'bull', value: 'bull' },
+  //     { text: 'bear', value: 'bear' },
+  //   ];
 
   const ByIsActive = [
     { value: '', text: 'Select change status' },
@@ -288,7 +288,7 @@ const gotToDetails = (user,item)=>{
 
   return (
     <>
-      <EuiFlexGroup alignItems="center">
+      {/* <EuiFlexGroup alignItems="center">
         <EuiFlexItem grow={false}>
           <EuiFieldSearch
             placeholder="Search by name"
@@ -297,11 +297,7 @@ const gotToDetails = (user,item)=>{
             fullWidth
           />
         </EuiFlexItem>
-        {/* <EuiFlexItem grow={false} style={{ marginLeft: 'auto', marginRight: '-150px' ,fontWeight:"700"}}>
-          <div>
-            Last Run Date: {lastRunDate}
-          </div>
-        </EuiFlexItem> */}
+
         <div style={{ marginLeft: "50%", display: "flex", marginTop: "5px" }}>
           <EuiFlexItem grow={false} onClick={showModal}>
             <EuiBadge color="subdued">
@@ -315,6 +311,25 @@ const gotToDetails = (user,item)=>{
             </EuiBadge>
           </EuiFlexItem>
         </div>
+      </EuiFlexGroup> */}
+      <EuiFlexGroup alignItems="center">
+        <EuiFlexItem>
+          <EuiFieldSearch
+            placeholder="Search by symbol"
+            value={searchValue}
+            onChange={handleSearchChange}
+            isClearable={true}
+            aria-label="Search by symbol"
+          />
+        </EuiFlexItem>
+        <EuiFlexItem grow={false}>
+          <EuiButton onClick={showModal} iconType="filter">
+            Filters
+          </EuiButton>
+        </EuiFlexItem>
+        <EuiFlexItem grow={false}>
+          <EuiButtonEmpty onClick={handleClearFilters}>Clear Filters</EuiButtonEmpty>
+        </EuiFlexItem>
       </EuiFlexGroup>
       <EuiSpacer size="l" />
       <EuiBasicTable
@@ -356,10 +371,10 @@ const gotToDetails = (user,item)=>{
               </EuiButton>
             </EuiModalFooter>
           </EuiModal>
-         
+
         </EuiOverlayMask>
       )}
-      <UsersModalComponent UsersData={UsersData != undefined?UsersData:""} isModalUpdateVisible={isModalUpdateVisible} setIsModalUpdateVisible={setIsModalUpdateVisible} closeUpdateModal={closeUpdateModal} showUpdateModal={showUpdateModal} />
+      <UsersModalComponent UsersData={UsersData != undefined ? UsersData : ""} isModalUpdateVisible={isModalUpdateVisible} setIsModalUpdateVisible={setIsModalUpdateVisible} closeUpdateModal={closeUpdateModal} showUpdateModal={showUpdateModal} />
     </>
   );
 };

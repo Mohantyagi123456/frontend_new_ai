@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { EuiSelect, EuiButton, EuiBasicTable, EuiText } from '@elastic/eui';
+import { EuiSelect, EuiButton, EuiBasicTable, EuiText,EuiLoadingSpinner } from '@elastic/eui';
 import swal from 'sweetalert';
 
 const PatchUpdate = () => {
@@ -9,6 +9,7 @@ const PatchUpdate = () => {
   const [selectedSymbols, setSelectedSymbols] = useState({});
   const [selectedTitle, setSelectedTitle] = useState('');
   const [selectedExcludeSymbols, setSelectedExcludeSymbols] = useState({});
+  const [loader,setLoader] = useState(false)
 
   console.log("selectedSymbols", selectedSymbols);
   console.log("selectedExcludeSymbols", selectedExcludeSymbols);
@@ -57,17 +58,20 @@ const PatchUpdate = () => {
           _range: ""
         };
         try {
+          setLoader(true)
           const response = await axios.patch(`${process.env.REACT_APP_BASE_URL}/status/current/update/`, body, {
             headers
           });
 
           console.log('Data patched successfully:', response.data);
+          setLoader(false)
           await swal("Updated!", "Updated successfully!", "success");
           localStorage.setItem('donotCallApi', true);
           navigate("/");
           window.location.reload();
         } catch (error) {
           console.error('Error patching data:', error);
+          setLoader(false)
         }
       // } else {
       //   navigate('/broker-login');
@@ -190,25 +194,32 @@ const PatchUpdate = () => {
 
   return (
     <div className="patch-update-select">
+
       <div style={{ display: "flex" }}>
         <div style={{ marginTop: "50px" }}>
-          <EuiText style={{ marginLeft: "15px" }}> <h3>Patch Update</h3></EuiText>
+          <EuiText style={{ marginLeft: "15px" }}> <h3>Update Blaze</h3></EuiText>
           <EuiBasicTable
             style={{ maxWidth: "270px", marginLeft: "10px", marginTop: "20px" }}
             items={users}
             columns={columns}
           />
         </div>
+        
         <div className="vertical-divider"></div>
         <div style={{ marginTop: "50px", marginLeft: "60px" }}>
+        
           <EuiText style={{ marginLeft: "15px" }}> <h3>Generate Strategy</h3></EuiText>
+          
           <EuiBasicTable
             style={{ maxWidth: "500px", marginLeft: "10px", marginTop: "20px" }}
             items={strategyItems}
             columns={Strategycolumns}
           />
+          {loader?
+          <EuiLoadingSpinner size="xxl" className='loader'/>:""}
         </div>
       </div>
+      
     </div>
   );
 };

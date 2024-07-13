@@ -204,7 +204,8 @@ const HeaderUpdates = () => {
   );
 };
 
-const HeaderUserMenu = () => {
+const HeaderUserMenu = ({details}) => {
+  console.log("details",details)
   const navigate = useNavigate()
   const userPopoverId = useGeneratedHtmlId({ prefix: 'userPopover' });
   const [isOpen, setIsOpen] = useState(false);
@@ -225,7 +226,7 @@ const HeaderUserMenu = () => {
       aria-label="Account menu"
       onClick={onMenuButtonClick}
     >
-      <EuiAvatar name="John Username" size="s" />
+      <EuiAvatar name={details.first_name +" " +details.last_name} size="s" />
     </EuiHeaderSectionItemButton>
   );
 
@@ -233,6 +234,11 @@ const HeaderUserMenu = () => {
     localStorage.clear()
     clearAllStores();
     navigate("/login")
+  }
+
+  const gotToDetails = (details) => {
+    console.log("user,item", details)
+    navigate(`/all-users/details/${details.id}`, { state: details });
   }
 
   return (
@@ -248,12 +254,12 @@ const HeaderUserMenu = () => {
       <div style={{ width: 300 }}>
         <EuiFlexGroup gutterSize="m" responsive={false}>
           <EuiFlexItem grow={false}>
-            <EuiAvatar name="John Username" size="xl" />
+            <EuiAvatar name={details.first_name +" " +details.last_name} size="xl" />
           </EuiFlexItem>
 
           <EuiFlexItem>
             <EuiText>
-              <p>John Username</p>
+              <p>{details.first_name +" " +details.last_name}</p>
             </EuiText>
 
             <EuiSpacer size="m" />
@@ -261,7 +267,7 @@ const HeaderUserMenu = () => {
             <EuiFlexGroup>
               <EuiFlexItem>
                 <EuiFlexGroup justifyContent="spaceBetween">
-                  <EuiFlexItem grow={false}>
+                  <EuiFlexItem grow={false} onClick={() => { gotToDetails(details) }}>
                     <EuiLink>Edit profile</EuiLink>
                   </EuiFlexItem>
 
@@ -283,6 +289,9 @@ const AppHeader = () => {
   const [theme, setTheme] = useState('default');
   localStorage.setItem("theme",theme)
   const navigate = useNavigate()
+
+  const UserDetails = JSON.parse(localStorage.getItem('userData'));
+  console.log("UserDetails",UserDetails?.user)
 
   const breadcrumbs = [
     {
@@ -317,7 +326,7 @@ const AppHeader = () => {
             ],
           },
           {
-           items:[<HeaderTabs/>]
+           items:[<HeaderTabs />]
           },
 
           {
@@ -337,7 +346,7 @@ const AppHeader = () => {
                   <HeaderUpdates />
                 </EuiHeaderSectionItem>
                 <EuiHeaderSectionItem>
-                  <HeaderUserMenu />
+                  <HeaderUserMenu details={UserDetails?.user}/>
                 </EuiHeaderSectionItem>
               </EuiHeaderSection>,
             ],

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import moment from 'moment';
 import {
   Comparators,
   EuiBasicTable,
@@ -34,6 +35,7 @@ const CustomTable = ({ userData }) => {
   const [filterOption, setFilterOption] = useState({
     current_status: '',
     previous_status: '',
+    current_status_start_dt: "all",
     is_changed: '',
   });
   const [lastRunDate, setLastRunDate] = useState('');
@@ -187,6 +189,7 @@ const CustomTable = ({ userData }) => {
   const handleClearFilters = () => {
     setFilterOption({
       current_status: '',
+      current_status_start_dt: "all",
       is_changed: '',
     });
     setSearchValue('');
@@ -208,6 +211,14 @@ const CustomTable = ({ userData }) => {
     { text: 'bull', value: 'bull' },
     { text: 'bear', value: 'bear' },
   ];
+  const ByCurrentStatusDate = [
+    { text: 'All', value: 'all' },
+    { text: 'Today', value: 'today' },
+    { text: '1 Week', value: '1week' },
+    { text: '1 Month', value: '1month' },
+    { text: '1 Year', value: '1year' },
+  ];
+
 
 
   const ByIsChanged = [
@@ -215,6 +226,34 @@ const CustomTable = ({ userData }) => {
     { value: 'true', text: 'True' },
     { value: 'false', text: 'False' },
   ];
+
+  const filterByDateRange = (items) => {
+    if (filterOption.current_status_start_dt === 'all') return items;
+
+    const today = moment().startOf('day');
+    let selectedDateRange;
+
+    switch (filterOption.current_status_start_dt) {
+      case 'today':
+        selectedDateRange = today;
+        break;
+      case '1week':
+        selectedDateRange = today.subtract(1, 'week');
+        break;
+      case '1month':
+        selectedDateRange = today.subtract(1, 'month');
+        break;
+      case '1year':
+        selectedDateRange = today.subtract(1, 'year');
+        break;
+      default:
+        selectedDateRange = null;
+    }
+
+    return items.filter((item) => moment(item.current_status_start_dt).isSameOrAfter(selectedDateRange));
+  };
+
+
 
   const findUsers = (users, pageIndex, pageSize, sortField, sortDirection) => {
     let items = [...users];
@@ -244,6 +283,8 @@ const CustomTable = ({ userData }) => {
       const isChanged = filterOption.is_changed === 'true';
       items = items.filter((user) => user.is_changed === isChanged);
     }
+
+    items = filterByDateRange(items);
 
     const startIndex = pageIndex * pageSize;
     const pageOfItems = items.slice(startIndex, startIndex + pageSize);
@@ -315,13 +356,13 @@ const CustomTable = ({ userData }) => {
           />
         </EuiFlexItem>
         <EuiFlexItem grow={false}>
-                    <EuiButton onClick={showModal} iconType="filter">
-                        Filters
-                    </EuiButton>
-                </EuiFlexItem>
-                <EuiFlexItem grow={false}>
-                    <EuiButtonEmpty onClick={handleClearFilters}>Clear Filters</EuiButtonEmpty>
-                </EuiFlexItem>
+          <EuiButton onClick={showModal} iconType="filter">
+            Filters
+          </EuiButton>
+        </EuiFlexItem>
+        <EuiFlexItem grow={false}>
+          <EuiButtonEmpty onClick={handleClearFilters}>Clear Filters</EuiButtonEmpty>
+        </EuiFlexItem>
       </EuiFlexGroup>
       <EuiSpacer size="l" />
       <EuiBasicTable
@@ -343,7 +384,7 @@ const CustomTable = ({ userData }) => {
             <EuiModalBody>
               <EuiFlexGroup>
                 <EuiFlexItem>
-                  <EuiFormRow label="Filter by Current Status">
+                  <EuiFormRow label="Filter by Current St">
                     <EuiSelect
                       name="current_status"
                       options={ByCurrentStatus}
@@ -353,7 +394,7 @@ const CustomTable = ({ userData }) => {
                   </EuiFormRow>
                 </EuiFlexItem>
                 <EuiFlexItem>
-                  <EuiFormRow label="Filter by Previous Status">
+                  <EuiFormRow label="Filter by Previous St">
                     <EuiSelect
                       name="previous_status"
                       options={ByPreviousStatus}
@@ -363,11 +404,21 @@ const CustomTable = ({ userData }) => {
                   </EuiFormRow>
                 </EuiFlexItem>
                 <EuiFlexItem>
-                  <EuiFormRow label="Filter by Change Status">
+                  <EuiFormRow label="Filter by Change St">
                     <EuiSelect
                       name="is_changed"
                       options={ByIsChanged}
                       value={filterOption.is_changed}
+                      onChange={handleFilterChange}
+                    />
+                  </EuiFormRow>
+                </EuiFlexItem>
+                <EuiFlexItem>
+                  <EuiFormRow label="Current St Date">
+                    <EuiSelect
+                      name="current_status_start_dt"
+                      value={filterOption.current_status_start_dt}
+                      options={ByCurrentStatusDate}
                       onChange={handleFilterChange}
                     />
                   </EuiFormRow>

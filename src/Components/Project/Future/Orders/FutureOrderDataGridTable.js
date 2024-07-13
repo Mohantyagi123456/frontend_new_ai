@@ -19,7 +19,7 @@ import {
     EuiBadge,
     EuiModalBody,
     EuiModalFooter,
-    EuiDatePicker ,
+    EuiDatePicker,
     EuiModalHeader,
     EuiButtonIcon,
     EuiModalHeaderTitle,
@@ -40,6 +40,7 @@ const FutureOrderDataGridTable = ({ orderData }) => {
     const [filterOption, setFilterOption] = useState({
         order_type: '',
         previous_status: '',
+        modified_at:"all",
         strategy_name: '',
     });
     const [lastRunDate, setLastRunDate] = useState('');
@@ -219,6 +220,7 @@ const FutureOrderDataGridTable = ({ orderData }) => {
     const handleClearFilters = () => {
         setFilterOption({
             order_type: '',
+            modified_at:"all",
             strategy_name: '',
         });
         setSearchValue('');
@@ -242,6 +244,39 @@ const FutureOrderDataGridTable = ({ orderData }) => {
         { text: 'StocksFuture2d3d', value: 'StocksFuture2d3d' },
         { text: 'BankNiftyFuture1d2d', value: 'BankNiftyFuture1d2d' },
     ];
+    const ByDateRange = [
+        { text: 'All', value: 'all' },
+        { text: 'Today', value: 'today' },
+        { text: '1 Week', value: '1week' },
+        { text: '1 Month', value: '1month' },
+        { text: '1 Year', value: '1year' },
+    ];
+    const filterByDateRange = (items) => {
+        if (filterOption.modified_at === 'all') return items;
+
+        const today = moment().startOf('day');
+        let selectedDateRange;
+
+        switch (filterOption.modified_at) {
+            case 'today':
+                selectedDateRange = today;
+                break;
+            case '1week':
+                selectedDateRange = today.subtract(1, 'week');
+                break;
+            case '1month':
+                selectedDateRange = today.subtract(1, 'month');
+                break;
+            case '1year':
+                selectedDateRange = today.subtract(1, 'year');
+                break;
+            default:
+                selectedDateRange = null;
+        }
+
+        return items.filter((item) => moment(item.modified_at).isSameOrAfter(selectedDateRange));
+    };
+
 
 
 
@@ -261,12 +296,12 @@ const FutureOrderDataGridTable = ({ orderData }) => {
                 //   user.order_type.toLowerCase() === normalizedSearchValue
             );
         }
-
+        items = filterByDateRange(items);
         if (filterOption.order_type) {
             items = items.filter((user) => user.order_type === filterOption.order_type);
         }
         if (filterOption.strategy_name) {
-          items = items.filter((user) => user.strategy_name === filterOption.strategy_name);
+            items = items.filter((user) => user.strategy_name === filterOption.strategy_name);
         }
 
         // if (filterOption.strategy_name) {
@@ -328,7 +363,7 @@ const FutureOrderDataGridTable = ({ orderData }) => {
     };
 
     const [customerIdData, setCustomerIdData] = useState("")
-    const [gtdDate,setGtdDate] = useState(moment())
+    const [gtdDate, setGtdDate] = useState(moment())
     function addFivePercent(amount) {
         // Calculate 5% of the given amount
         const fivePercent = amount * 0.03;
@@ -366,9 +401,9 @@ const FutureOrderDataGridTable = ({ orderData }) => {
                 'Exchange': 'NSE',
                 'ScripCode': row?.current_status?.instruments?.exchange_token,
                 'ScripName': row?.current_status?.symbol,
-                'OrderPrice':  row?.buy_sell=== "BUY" ? addFivePercent(row?.trigger):subtractFivePercent(row?.trigger),
-                "TriggerPrice":  row?.trigger,
-                "OrderQty":row?.lot_size,
+                'OrderPrice': row?.buy_sell === "BUY" ? addFivePercent(row?.trigger) : subtractFivePercent(row?.trigger),
+                "TriggerPrice": row?.trigger,
+                "OrderQty": row?.lot_size,
                 "DisclosedQty": 0,
                 "BuySell": row?.buy_sell,
                 "OrderType": "NEW",
@@ -379,7 +414,7 @@ const FutureOrderDataGridTable = ({ orderData }) => {
                 "OrderID": 0,
                 "ExecQty": 0,
                 "ExecPrice": 0,
-                "OrderValid":"GFD",
+                "OrderValid": "GFD",
                 "GTDDate": gtdDate.format('YYYY-MM-DD')
             })
             );
@@ -412,15 +447,46 @@ const FutureOrderDataGridTable = ({ orderData }) => {
             handleExportCSV()
         }
     }
-    const AddtoWatchlist = ()=>{
+    const AddtoWatchlist = () => {
         console.log("selectedItemsselectedItems", selectedItems)
-        navigate('/watch-list', { state: { selectedItems ,form:"futureOrders"} });
+        navigate('/watch-list', { state: { selectedItems, form: "futureOrders" } });
     }
 
 
     return (
         <>
-            <EuiFlexGroup alignItems="center">
+         <EuiFlexGroup alignItems="center">
+                <EuiFlexItem>
+                    <EuiFieldSearch
+                        placeholder="Search by symbol"
+                        value={searchValue}
+                        onChange={handleSearchChange}
+                        isClearable={true}
+                        aria-label="Search by symbol"
+                    />
+                </EuiFlexItem>
+                <EuiFlexItem grow={false}>
+                    <EuiButton onClick={showModal} iconType="filter">
+                        Filters
+                    </EuiButton>
+                </EuiFlexItem>
+                <EuiFlexItem grow={false}>
+                    <EuiButton onClick={() => selectedItems.length != 0 ? AddtoWatchlist() : ""} iconType="plus" isDisabled={selectedItems.length != 0 ? false : true}>
+                        Add to Watchlist
+                    </EuiButton>
+                </EuiFlexItem>
+                <EuiFlexItem grow={false}>
+                    <EuiButton onClick={() => selectedItems.length != 0 ? openExportModal() : ""} iconType="download" isDisabled={selectedItems.length != 0 ? false : true}>
+                        Download Files
+                    </EuiButton>
+                </EuiFlexItem>
+
+                <EuiFlexItem grow={false}>
+                    <EuiButtonEmpty onClick={handleClearFilters}>Clear Filters</EuiButtonEmpty>
+                </EuiFlexItem>
+
+            </EuiFlexGroup>
+            {/* <EuiFlexGroup alignItems="center">
                 <EuiFlexItem grow={false}>
                     <EuiFieldSearch
                         placeholder="Search by name"
@@ -431,7 +497,7 @@ const FutureOrderDataGridTable = ({ orderData }) => {
                 </EuiFlexItem>
 
                 <div style={{ marginLeft: "50%", display: "flex", marginTop: "5px" }}>
-                <EuiFlexItem grow={false} style={{ fontWeight: "700" }} onClick={() => selectedItems.length != 0 ? AddtoWatchlist() : ""}>
+                    <EuiFlexItem grow={false} style={{ fontWeight: "700" }} onClick={() => selectedItems.length != 0 ? AddtoWatchlist() : ""}>
                         <EuiBadge color="success" isDisabled={selectedItems.length != 0 ? false : true}>
                             <EuiIcon type="plus" /> &nbsp;Add to Watchlist
                         </EuiBadge>
@@ -457,7 +523,7 @@ const FutureOrderDataGridTable = ({ orderData }) => {
                         </EuiBadge>
                     </EuiFlexItem>
                 </div>
-            </EuiFlexGroup>
+            </EuiFlexGroup> */}
             <EuiSpacer size="l" />
             <EuiBasicTable
                 tableCaption="Demo of EuiBasicTable with actions"
@@ -478,7 +544,7 @@ const FutureOrderDataGridTable = ({ orderData }) => {
                         <EuiModalBody>
                             <EuiFlexGroup>
                                 <EuiFlexItem>
-                                    <EuiFormRow label="Filter by Order Type">
+                                    <EuiFormRow label="Order Type">
                                         <EuiSelect
                                             name="order_type"
                                             options={ByOrderType}
@@ -488,7 +554,7 @@ const FutureOrderDataGridTable = ({ orderData }) => {
                                     </EuiFormRow>
                                 </EuiFlexItem>
                                 <EuiFlexItem>
-                                    <EuiFormRow label="Filter by Strategy Name">
+                                    <EuiFormRow label="Strategy Name">
                                         <EuiSelect
                                             name="strategy_name"
                                             options={ByStrategyName}
@@ -497,6 +563,16 @@ const FutureOrderDataGridTable = ({ orderData }) => {
                                         />
                                     </EuiFormRow>
                                 </EuiFlexItem>
+                                <EuiFlexItem>
+                                        <EuiFormRow label="Modified Date">
+                                            <EuiSelect
+                                                name="modified_at"
+                                                value={filterOption.modified_at}
+                                                options={ByDateRange}
+                                                onChange={handleFilterChange}
+                                            />
+                                        </EuiFormRow>
+                                    </EuiFlexItem>
                             </EuiFlexGroup>
                         </EuiModalBody>
                         <EuiModalFooter>
