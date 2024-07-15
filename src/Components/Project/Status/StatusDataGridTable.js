@@ -29,8 +29,8 @@ import StatusModalComponent from './StatusModalComponent';
 const CustomTable = ({ userData }) => {
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
-  const [sortField, setSortField] = useState('firstName');
-  const [sortDirection, setSortDirection] = useState('asc');
+  const [sortField, setSortField] = useState('current_status_start_dt');
+  const [sortDirection, setSortDirection] = useState('desc');
   const [searchValue, setSearchValue] = useState('');
   const [filterOption, setFilterOption] = useState({
     current_status: '',
@@ -382,9 +382,9 @@ const CustomTable = ({ userData }) => {
               <EuiModalHeaderTitle>Filters</EuiModalHeaderTitle>
             </EuiModalHeader>
             <EuiModalBody>
-              <EuiFlexGroup>
+              <EuiFlexGroup direction="column">
                 <EuiFlexItem>
-                  <EuiFormRow label="Filter by Current St">
+                  <EuiFormRow label="Filter by Current Status">
                     <EuiSelect
                       name="current_status"
                       options={ByCurrentStatus}
@@ -394,7 +394,7 @@ const CustomTable = ({ userData }) => {
                   </EuiFormRow>
                 </EuiFlexItem>
                 <EuiFlexItem>
-                  <EuiFormRow label="Filter by Previous St">
+                  <EuiFormRow label="Filter by Previous Status">
                     <EuiSelect
                       name="previous_status"
                       options={ByPreviousStatus}
@@ -404,7 +404,7 @@ const CustomTable = ({ userData }) => {
                   </EuiFormRow>
                 </EuiFlexItem>
                 <EuiFlexItem>
-                  <EuiFormRow label="Filter by Change St">
+                  <EuiFormRow label="Filter by Change Status">
                     <EuiSelect
                       name="is_changed"
                       options={ByIsChanged}
@@ -414,7 +414,7 @@ const CustomTable = ({ userData }) => {
                   </EuiFormRow>
                 </EuiFlexItem>
                 <EuiFlexItem>
-                  <EuiFormRow label="Current St Date">
+                  <EuiFormRow label="Current Status Date">
                     <EuiSelect
                       name="current_status_start_dt"
                       value={filterOption.current_status_start_dt}
@@ -434,8 +434,8 @@ const CustomTable = ({ userData }) => {
               </EuiButton>
             </EuiModalFooter>
           </EuiModal>
-
         </EuiOverlayMask>
+
       )}
       <StatusModalComponent statusData={statusData != undefined ? statusData : ""} isModalUpdateVisible={isModalUpdateVisible} setIsModalUpdateVisible={setIsModalUpdateVisible} closeUpdateModal={closeUpdateModal} showUpdateModal={showUpdateModal} />
     </>

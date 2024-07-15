@@ -91,10 +91,11 @@ const LoginForm = () => {
         </EuiText>
         <EuiSpacer />
         <EuiForm component="form" onSubmit={handleSubmit}>
-          <EuiFormRow label="Username">
+          <EuiFormRow label="Username / Email / Mobile">
             <EuiFieldText
               name="username"
               value={username}
+              placeholder='Username / Email / Mobile'
               onChange={handleUsernameChange}
             />
           </EuiFormRow>

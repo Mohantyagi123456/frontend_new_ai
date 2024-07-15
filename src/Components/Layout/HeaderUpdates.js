@@ -217,7 +217,7 @@ const HeaderUserMenu = ({details}) => {
   const closeMenu = () => {
     setIsOpen(false);
   };
-
+// console.log("details",details)
   const button = (
     <EuiHeaderSectionItemButton
       aria-controls={userPopoverId}
@@ -226,7 +226,7 @@ const HeaderUserMenu = ({details}) => {
       aria-label="Account menu"
       onClick={onMenuButtonClick}
     >
-      <EuiAvatar name={details.first_name +" " +details.last_name} size="s" />
+      <EuiAvatar name={details?.first_name  +" " +details?.last_name} size="s" />
     </EuiHeaderSectionItemButton>
   );
 
@@ -290,8 +290,9 @@ const AppHeader = () => {
   localStorage.setItem("theme",theme)
   const navigate = useNavigate()
 
-  const UserDetails = JSON.parse(localStorage.getItem('userData'));
-  console.log("UserDetails",UserDetails?.user)
+  const UserDetailsd = localStorage.getItem('userData')
+  const UserDetails = JSON.parse(UserDetailsd != "undefined" ?UserDetailsd :"")
+
 
   const breadcrumbs = [
     {

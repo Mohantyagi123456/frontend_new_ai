@@ -29,13 +29,12 @@ import moment from 'moment';
 import EquityModalComponent from './EquityModalComponent';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-
 const EquityDataGridTable = ({ userData }) => {
     const navigate = useNavigate();
     const [pageIndex, setPageIndex] = useState(0);
     const [pageSize, setPageSize] = useState(10);
-    const [sortField, setSortField] = useState('firstName');
-    const [sortDirection, setSortDirection] = useState('asc');
+    const [sortField, setSortField] = useState('cc_date');
+    const [sortDirection, setSortDirection] = useState('desc');
     const [searchValue, setSearchValue] = useState('');
     const [gtdDate, setGtdDate] = useState(moment());
     const [filterOption, setFilterOption] = useState({
@@ -47,7 +46,7 @@ const EquityDataGridTable = ({ userData }) => {
     });
     const [lastRunDate, setLastRunDate] = useState('');
     const [isModalUpdateVisible, setIsModalUpdateVisible] = useState(false);
-    const [selectedItems, setSelectedItems] = useState([]); // New state for selected items
+    const [selectedItems, setSelectedItems] = useState([]);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [exportModalOpen, setExportModalOpen] = useState(false);
     const [statusData, setStatusData] = useState('');
@@ -57,6 +56,7 @@ const EquityDataGridTable = ({ userData }) => {
     const showModal = () => setIsModalVisible(true);
     const openExportModal = () => setExportModalOpen(true);
     const closeExportModal = () => setExportModalOpen(false);
+
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         const year = date.getFullYear();
@@ -76,6 +76,7 @@ const EquityDataGridTable = ({ userData }) => {
     function NewformatDate(date) {
         return date.toString().split(' GMT')[0];
     }
+
     useEffect(() => {
         if (userData.length > 0) {
             const latestDate = userData.reduce((maxDate, user) => {
@@ -83,17 +84,19 @@ const EquityDataGridTable = ({ userData }) => {
                 return currentDate > maxDate ? currentDate : maxDate;
             }, new Date(0));
 
-            setLastRunDate(NewformatDate(latestDate)); // Assuming formatDate function is defined as in your original code
+            setLastRunDate(NewformatDate(latestDate));
         }
     }, [userData]);
+
     const updateStatusDetails = (data) => {
         showUpdateModal();
         setStatusData(data);
     };
-    const gotToDetails = (user,item)=>{
-        console.log("user,item",user,item)
-        navigate('/equity/details', {state:item });
-    }
+
+    const gotToDetails = (user, item) => {
+        navigate('/equity/details', { state: item });
+    };
+
     const columns = [
         {
             field: 'symbol',
@@ -101,18 +104,17 @@ const EquityDataGridTable = ({ userData }) => {
             truncateText: true,
             sortable: true,
             render: (user, item) => (
-                <EuiLink onClick={(user)=>{gotToDetails(user,item)}}>
+                <EuiLink onClick={() => gotToDetails(user, item)}>
                     {user}
                 </EuiLink>
             ),
             mobileOptions: {
                 render: (user) => (
-                    <EuiLink onClick={(user)=>{gotToDetails(user)}}>
+                    <EuiLink onClick={() => gotToDetails(user)}>
                         {user.symbol}
                     </EuiLink>
                 ),
             },
-            
         },
         {
             field: 'version',
@@ -148,7 +150,6 @@ const EquityDataGridTable = ({ userData }) => {
             sortable: true,
             render: (ath_date) => formatDate(ath_date),
         },
-
         {
             field: 'cc_date',
             name: 'CC Date',
@@ -183,7 +184,7 @@ const EquityDataGridTable = ({ userData }) => {
 
     const handleSearchChange = (e) => {
         setSearchValue(e.target.value);
-        setPageIndex(0); // Reset pageIndex when search changes
+        setPageIndex(0);
     };
 
     const handleFilterChange = (e) => {
@@ -192,7 +193,7 @@ const EquityDataGridTable = ({ userData }) => {
             ...prevFilterOption,
             [name]: value,
         }));
-        setPageIndex(0); // Reset pageIndex when filter changes
+        setPageIndex(0);
     };
 
     const handleClearFilters = () => {
@@ -203,7 +204,7 @@ const EquityDataGridTable = ({ userData }) => {
             trade_status: ''
         });
         setSearchValue('');
-        setPageIndex(0); // Reset pageIndex when filters are cleared
+        setPageIndex(0);
         closeModal();
     };
 
@@ -232,7 +233,6 @@ const EquityDataGridTable = ({ userData }) => {
         { text: 'Target 5', value: 'Target 5' },
         { text: 'CC Formed', value: 'CC_FORMED' },
         { text: 'SL', value: 'SL' }
-
     ];
 
     const filterByDateRange = (items) => {
@@ -271,14 +271,15 @@ const EquityDataGridTable = ({ userData }) => {
         if (searchValue) {
             const normalizedSearchValue = searchValue.trim().toLowerCase();
             items = items.filter(
-                (user) =>
-                    user.symbol.toLowerCase() === normalizedSearchValue
+                (user) => user.symbol.toLowerCase() === normalizedSearchValue
             );
         }
 
         if (filterOption.version) {
             items = items.filter((user) => user.version === filterOption.version);
         }
+
+
 
         if (filterOption.trade_status) {
             items = items.filter((user) => user.trade_status === filterOption.trade_status);
@@ -472,7 +473,7 @@ const EquityDataGridTable = ({ userData }) => {
                         </EuiModalHeader>
                         <EuiModalBody>
                             <EuiForm component="form" onSubmit={handleFormSubmit}>
-                                <EuiFlexGroup>
+                                <EuiFlexGroup direction="column">
                                     <EuiFlexItem>
                                         <EuiFormRow label="Version">
                                             <EuiSelect
@@ -503,12 +504,7 @@ const EquityDataGridTable = ({ userData }) => {
                                             />
                                         </EuiFormRow>
                                     </EuiFlexItem>
-                                 
-
                                 </EuiFlexGroup>
-
-                                <EuiSpacer />
-                           
                             </EuiForm>
                         </EuiModalBody>
                         <EuiModalFooter>
@@ -521,6 +517,7 @@ const EquityDataGridTable = ({ userData }) => {
                         </EuiModalFooter>
                     </EuiModal>
                 </EuiOverlayMask>
+
             )}
 
             {isModalUpdateVisible && (

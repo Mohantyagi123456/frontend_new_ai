@@ -29,8 +29,8 @@ const CustomTable = ({ userData }) => {
   const navigate = useNavigate();
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
-  const [sortField, setSortField] = useState('firstName');
-  const [sortDirection, setSortDirection] = useState('asc');
+  const [sortField, setSortField] = useState('date_joined');
+  const [sortDirection, setSortDirection] = useState('desc');
   const [searchValue, setSearchValue] = useState('');
   const [filterOption, setFilterOption] = useState({
     is_active: '',

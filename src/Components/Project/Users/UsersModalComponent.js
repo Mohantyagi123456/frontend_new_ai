@@ -45,21 +45,21 @@ const ExampleForm = ({ id, initialUsersData, handleSave, handleCancel }) => {
 
   return (
     <EuiForm id={id} component="form" onSubmit={handleSubmit}>
-      <EuiFormRow label="FullName">
+      <EuiFormRow label="Full Name">
         <EuiFieldText
           name="full_name"
           value={formData.full_name}
           onChange={(e) => handleFormChange('full_name', e.target.value)}
         />
       </EuiFormRow>
-      <EuiFormRow label="FullName">
+      <EuiFormRow label="Email Address">
         <EuiFieldText
           name="email"
           value={formData.email}
           onChange={(e) => handleFormChange('email', e.target.value)}
         />
       </EuiFormRow>
-      <EuiFormRow label="PanCard">
+      <EuiFormRow label="Pan Card">
         <EuiFieldText
           name="pan_card"
           value={formData.pan_card}

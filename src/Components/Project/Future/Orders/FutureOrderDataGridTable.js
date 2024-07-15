@@ -34,13 +34,13 @@ const FutureOrderDataGridTable = ({ orderData }) => {
     console.log("orderDataorderData", orderData)
     const [pageIndex, setPageIndex] = useState(0);
     const [pageSize, setPageSize] = useState(10);
-    const [sortField, setSortField] = useState('firstName');
-    const [sortDirection, setSortDirection] = useState('asc');
+    const [sortField, setSortField] = useState('modified_at');
+    const [sortDirection, setSortDirection] = useState('desc');
     const [searchValue, setSearchValue] = useState('');
     const [filterOption, setFilterOption] = useState({
         order_type: '',
         previous_status: '',
-        modified_at:"all",
+        modified_at: "all",
         strategy_name: '',
     });
     const [lastRunDate, setLastRunDate] = useState('');
@@ -220,7 +220,7 @@ const FutureOrderDataGridTable = ({ orderData }) => {
     const handleClearFilters = () => {
         setFilterOption({
             order_type: '',
-            modified_at:"all",
+            modified_at: "all",
             strategy_name: '',
         });
         setSearchValue('');
@@ -455,7 +455,7 @@ const FutureOrderDataGridTable = ({ orderData }) => {
 
     return (
         <>
-         <EuiFlexGroup alignItems="center">
+            <EuiFlexGroup alignItems="center">
                 <EuiFlexItem>
                     <EuiFieldSearch
                         placeholder="Search by symbol"
@@ -542,7 +542,7 @@ const FutureOrderDataGridTable = ({ orderData }) => {
                             <EuiModalHeaderTitle>Filters</EuiModalHeaderTitle>
                         </EuiModalHeader>
                         <EuiModalBody>
-                            <EuiFlexGroup>
+                            <EuiFlexGroup direction="column">
                                 <EuiFlexItem>
                                     <EuiFormRow label="Order Type">
                                         <EuiSelect
@@ -564,15 +564,15 @@ const FutureOrderDataGridTable = ({ orderData }) => {
                                     </EuiFormRow>
                                 </EuiFlexItem>
                                 <EuiFlexItem>
-                                        <EuiFormRow label="Modified Date">
-                                            <EuiSelect
-                                                name="modified_at"
-                                                value={filterOption.modified_at}
-                                                options={ByDateRange}
-                                                onChange={handleFilterChange}
-                                            />
-                                        </EuiFormRow>
-                                    </EuiFlexItem>
+                                    <EuiFormRow label="Modified Date">
+                                        <EuiSelect
+                                            name="modified_at"
+                                            value={filterOption.modified_at}
+                                            options={ByDateRange}
+                                            onChange={handleFilterChange}
+                                        />
+                                    </EuiFormRow>
+                                </EuiFlexItem>
                             </EuiFlexGroup>
                         </EuiModalBody>
                         <EuiModalFooter>
@@ -584,8 +584,8 @@ const FutureOrderDataGridTable = ({ orderData }) => {
                             </EuiButton>
                         </EuiModalFooter>
                     </EuiModal>
-
                 </EuiOverlayMask>
+
             )}
 
             {exportModalOpen && (

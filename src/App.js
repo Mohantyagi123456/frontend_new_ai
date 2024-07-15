@@ -278,14 +278,14 @@ const App = () => {
             },
           ],
         },
-        {
-          name: 'Update Blaze',
-          id: 'patch-update',
-          onClick: () => handleItemClick('Update Blaze', '/patch-update'),
-          className: 'custom-margin',
-          icon: <EuiIcon type="refresh" />,
-          isSelected: selectedItemName === 'Update Blaze',
-        },
+        // {
+        //   name: 'Update Blaze',
+        //   id: 'patch-update',
+        //   onClick: () => handleItemClick('Update Blaze', '/patch-update'),
+        //   className: 'custom-margin',
+        //   icon: <EuiIcon type="refresh" />,
+        //   isSelected: selectedItemName === 'Update Blaze',
+        // },
         {
           name: 'About Us',
           id: 'about-us',

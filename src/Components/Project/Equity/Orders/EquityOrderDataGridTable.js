@@ -33,10 +33,10 @@ const EquityOrderDataGridTable = ({ orderData }) => {
     const navigate = useNavigate();
     const [pageIndex, setPageIndex] = useState(0);
     const [pageSize, setPageSize] = useState(10);
-    const [sortField, setSortField] = useState('trading_symbol');
-    const [sortDirection, setSortDirection] = useState('asc');
+    const [sortField, setSortField] = useState('triggered_at');
+    const [sortDirection, setSortDirection] = useState('desc');
     const [searchValue, setSearchValue] = useState('');
-    const [gtdDate, setGtdDate] = useState(moment())
+    const [gtdDate, setGtdDate] = useState(moment());
     const [filterOption, setFilterOption] = useState({
         current_status: '',
         previous_status: '',
@@ -45,17 +45,19 @@ const EquityOrderDataGridTable = ({ orderData }) => {
     });
     const [lastRunDate, setLastRunDate] = useState('');
     const [isModalUpdateVisible, setIsModalUpdateVisible] = useState(false);
-    const [selectedItems, setSelectedItems] = useState([]); // New state for selected items
+    const [selectedItems, setSelectedItems] = useState([]);
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [exportModalOpen, setExportModalOpen] = useState(false)
-    const [ordersData, setOrdersData] = useState("")
+    const [exportModalOpen, setExportModalOpen] = useState(false);
+    const [ordersData, setOrdersData] = useState('');
+    const [customerIdData, setCustomerIdData] = useState('');
+
     const closeUpdateModal = () => setIsModalUpdateVisible(false);
     const showUpdateModal = () => setIsModalUpdateVisible(true);
     const closeModal = () => setIsModalVisible(false);
     const showModal = () => setIsModalVisible(true);
-    const openExportModal = () => setExportModalOpen(true)
+    const openExportModal = () => setExportModalOpen(true);
     const closeExportModal = () => setExportModalOpen(false);
-    console.log("isModalUpdateVisible", orderData)
+
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         const year = date.getFullYear();
@@ -72,7 +74,6 @@ const EquityOrderDataGridTable = ({ orderData }) => {
         return `${year}-${month}-${day}`;
     };
 
-
     useEffect(() => {
         if (orderData.length > 0) {
             const latestDate = orderData.reduce((maxDate, user) => {
@@ -80,13 +81,15 @@ const EquityOrderDataGridTable = ({ orderData }) => {
                 return currentDate > maxDate ? currentDate : maxDate;
             }, new Date(0));
 
-            setLastRunDate(formatDate(latestDate)); // Assuming formatDate function is defined as in your original code
+            setLastRunDate(formatDate(latestDate));
         }
     }, [orderData]);
+
     const updateOrderDetails = (data) => {
-        showUpdateModal()
-        setOrdersData(data)
-    }
+        showUpdateModal();
+        setOrdersData(data);
+    };
+
     const columns = [
         {
             field: 'trading_symbol',
@@ -134,7 +137,6 @@ const EquityOrderDataGridTable = ({ orderData }) => {
             truncateText: true,
             sortable: true,
             render: (triggered_at) => formatDate(triggered_at),
-
         },
         {
             field: 'created_at',
@@ -143,7 +145,6 @@ const EquityOrderDataGridTable = ({ orderData }) => {
             sortable: true,
             render: (created_at) => formatDate(created_at),
         },
-
         {
             field: 'modified_at',
             name: 'Modified Date',
@@ -163,10 +164,8 @@ const EquityOrderDataGridTable = ({ orderData }) => {
 
     const handleSearchChange = (e) => {
         setSearchValue(e.target.value);
-        setPageIndex(0); // Reset pageIndex when search changes
+        setPageIndex(0);
     };
-
-
 
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
@@ -174,7 +173,7 @@ const EquityOrderDataGridTable = ({ orderData }) => {
             ...prevFilterOption,
             [name]: value,
         }));
-        setPageIndex(0); // Reset pageIndex when filter changes
+        setPageIndex(0);
     };
 
     const handleClearFilters = () => {
@@ -182,15 +181,14 @@ const EquityOrderDataGridTable = ({ orderData }) => {
             current_status: '',
             previous_status: '',
             is_changed: '',
-            triggered_at: 'all', // Make sure to include all filter options here
-            version: '', // Add any other filter options you have
-            name: '', // Add any other filter options you have
+            triggered_at: 'all',
+            version: '',
+            name: '',
         });
         setSearchValue('');
-        setPageIndex(0); // Reset pageIndex when filters are cleared
+        setPageIndex(0);
         closeModal();
     };
-
 
     const ByVersion = [
         { text: 'All', value: '' },
@@ -208,7 +206,6 @@ const EquityOrderDataGridTable = ({ orderData }) => {
         { text: 'Target 5', value: 'Target 5' },
         { text: 'CC Formed', value: 'CC_FORMED' },
         { text: 'SL', value: 'SL' }
-
     ];
 
     const ByDateRange = [
@@ -245,7 +242,6 @@ const EquityOrderDataGridTable = ({ orderData }) => {
         return items.filter((item) => moment(item.triggered_at).isSameOrAfter(selectedDateRange));
     };
 
-
     const findUsers = (users, pageIndex, pageSize, sortField, sortDirection) => {
         let items = [...users];
 
@@ -277,44 +273,28 @@ const EquityOrderDataGridTable = ({ orderData }) => {
         };
     };
 
-
-    const { pageOfItems, totalItemCount } = findUsers(
-        orderData,
-        pageIndex,
-        pageSize,
-        sortField,
-        sortDirection
-    );
+    const { pageOfItems, totalItemCount } = findUsers(orderData, pageIndex, pageSize, sortField, sortDirection);
 
     const pagination = {
-        pageIndex: pageIndex,
-        pageSize: pageSize,
-        totalItemCount: totalItemCount,
+        pageIndex,
+        pageSize,
+        totalItemCount,
         pageSizeOptions: [10, 20, 50],
-    };
-
-    const sorting = {
-        sort: {
-            field: sortField,
-            direction: sortDirection,
-        },
     };
 
     const onTableChange = ({ page = {}, sort = {} }) => {
         const { index: pageIndex, size: pageSize } = page;
-
-        setPageIndex(pageIndex || 0);
-        setPageSize(pageSize || 10);
-        if (sort.field) {
-            setSortField(sort.field);
-            setSortDirection(sort.direction);
-        }
+        const { field: sortField, direction: sortDirection } = sort;
+        setPageIndex(pageIndex);
+        setPageSize(pageSize);
+        setSortField(sortField);
+        setSortDirection(sortDirection);
     };
 
     const onSelectionChange = (selectedItems) => {
-        console.log("selectedItems", selectedItems)
         setSelectedItems(selectedItems);
     };
+
 
     const selection = {
         selectable: (user) => true,
@@ -322,7 +302,7 @@ const EquityOrderDataGridTable = ({ orderData }) => {
         onSelectionChange: onSelectionChange,
     };
 
-    const [customerIdData, setCustomerIdData] = useState("")
+    // const [customerIdData, setCustomerIdData] = useState("")
 
     function addFivePercent(amount) {
         // Calculate 5% of the given amount
@@ -359,7 +339,7 @@ const EquityOrderDataGridTable = ({ orderData }) => {
             // Map each row to an object containing all fields
             ({
                 'Exchange': 'NSE',
-                'ScripCode': row?.current_status?.instruments?.exchange_token,
+                'ScripCode': row?.bt_equity_analysis?.exchange_token,
                 'ScripName': row?.trading_symbol,
                 'OrderPrice': row?.buy_sell === "BUY" ? addFivePercent(row?.trigger) : subtractFivePercent(row?.trigger),
                 "TriggerPrice": row?.trigger,
@@ -411,7 +391,12 @@ const EquityOrderDataGridTable = ({ orderData }) => {
         console.log("selectedItemsselectedItems", selectedItems)
         navigate('/watch-list', { state: { selectedItems, form: "equityOrders" } });
     }
-
+    const sorting = {
+        sort: {
+            field: sortField,
+            direction: sortDirection,
+        },
+    };
 
 
     return (
@@ -465,7 +450,7 @@ const EquityOrderDataGridTable = ({ orderData }) => {
                             <EuiModalHeaderTitle>Filters</EuiModalHeaderTitle>
                         </EuiModalHeader>
                         <EuiModalBody>
-                            <EuiFlexGroup>
+                            <EuiFlexGroup direction="column">
                                 <EuiFlexItem>
                                     <EuiFormRow label="Version">
                                         <EuiSelect
@@ -475,7 +460,6 @@ const EquityOrderDataGridTable = ({ orderData }) => {
                                             onChange={handleFilterChange}
                                         />
                                     </EuiFormRow>
-
                                 </EuiFlexItem>
                                 <EuiFlexItem>
                                     <EuiFormRow label="Trigger Range">
@@ -508,8 +492,8 @@ const EquityOrderDataGridTable = ({ orderData }) => {
                             </EuiButton>
                         </EuiModalFooter>
                     </EuiModal>
-
                 </EuiOverlayMask>
+
             )}
 
             {exportModalOpen && (
