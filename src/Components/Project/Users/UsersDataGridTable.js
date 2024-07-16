@@ -3,6 +3,7 @@ import {
   Comparators,
   EuiBasicTable,
   EuiLink,
+  EuiSwitch,
   EuiButtonEmpty,
   EuiFlexGroup,
   EuiFlexItem,
@@ -24,9 +25,17 @@ import {
 } from '@elastic/eui';
 import { useNavigate, useLocation } from 'react-router-dom';
 import UsersModalComponent from './UsersModalComponent';
+import axios from 'axios';
 
 const CustomTable = ({ userData }) => {
   const navigate = useNavigate();
+
+  const baseUrl = process.env.REACT_APP_BASE_URL;
+const KiteId = JSON.parse(localStorage.getItem('userData'));
+const headers = {
+  'Authorization': `Bearer ${KiteId?.access}`
+};
+
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [sortField, setSortField] = useState('date_joined');
@@ -39,11 +48,14 @@ const CustomTable = ({ userData }) => {
   const [isModalUpdateVisible, setIsModalUpdateVisible] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]); // New state for selected items
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [adminPermissionModal, setAdminPermissionModal] = useState(false);
   const [UsersData, setUsersData] = useState("")
   const closeUpdateModal = () => setIsModalUpdateVisible(false);
   const showUpdateModal = () => setIsModalUpdateVisible(true);
   const closeModal = () => setIsModalVisible(false);
   const showModal = () => setIsModalVisible(true);
+  const AdminCloseModal = () => setAdminPermissionModal(false);
+  const AdminShowModal = () => setAdminPermissionModal(true);
   console.log("isModalUpdateVisible", isModalUpdateVisible)
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -100,6 +112,15 @@ const CustomTable = ({ userData }) => {
       },
     },
     {
+      field: 'username',
+      name: 'User Name',
+      truncateText: true,
+      sortable: true,
+      mobileOptions: {
+        show: false,
+      },
+    },
+    {
       field: 'email',
       name: 'Email',
       truncateText: true,
@@ -109,26 +130,30 @@ const CustomTable = ({ userData }) => {
       },
     },
     {
-      field: 'pan_card',
-      name: 'PanCard',
+      field: 'contact',
+      name: 'Contact',
       truncateText: true,
       sortable: true,
+      render: (user, item) => (
+       <> {item?.contact?.contact}</>
+
+      ),
       mobileOptions: {
         show: false,
       },
     },
-    {
-      field: 'aadhaar_card',
-      name: 'Aadhaar Card',
-      truncateText: true,
-      sortable: true,
-      mobileOptions: {
-        show: false,
-      },
-    },
+    // {
+    //   field: 'aadhaar_card',
+    //   name: 'Aadhaar Card',
+    //   truncateText: true,
+    //   sortable: true,
+    //   mobileOptions: {
+    //     show: false,
+    //   },
+    // },
     {
       field: 'is_active',
-      name: 'Is Active',
+      name: 'Active',
       dataType: 'boolean',
       render: (is_active) => {
         const color = is_active ? 'success' : 'danger';
@@ -138,6 +163,19 @@ const CustomTable = ({ userData }) => {
         </EuiFlexItem>;
       },
       sortable: true,
+    },
+    {
+      field: 'is_user',
+      name: 'User Type',
+      truncateText: true,
+      sortable: true,
+      render: (user, item) => (
+        <> {item?.is_user == true ?<>User</>:item?.is_staff == true?<>Admin</>:item?.is_superuser == true?<>Super Admin</>:""}</>
+ 
+       ),
+      mobileOptions: {
+        show: false,
+      },
     },
     {
       field: 'date_joined',
@@ -153,13 +191,7 @@ const CustomTable = ({ userData }) => {
       render: (user) => {
         return <EuiButtonIcon display="base" onClick={() => updateStatusDetails(user)} iconType="pencil" size="xs" aria-label="Next" />
       }
-      // sortable: true,
-      // mobileOptions: {
-      //   render: (user) => (
-
-      //     <button>ff</button>
-      //   ),
-      // },
+ 
     },
   ];
 
@@ -216,16 +248,11 @@ const CustomTable = ({ userData }) => {
 
     if (searchValue) {
       const normalizedSearchValue = searchValue.trim().toLowerCase();
+      const searchLength = Math.min(normalizedSearchValue.length, 9);
       items = items.filter(
         (user) =>
-          user.full_name.toLowerCase() === normalizedSearchValue
-          ||
-          user.email.toLowerCase() === normalizedSearchValue
-          ||
-          user.pan_card.toLowerCase() === normalizedSearchValue
-          ||
-          user.aadhaar_card.toLowerCase() === normalizedSearchValue
-      );
+          (user?.full_name && typeof user?.full_name === 'string' && user.full_name.toLowerCase().slice(0, searchLength) === normalizedSearchValue.slice(0, searchLength)) ||
+          (user?.email && typeof user?.email === 'string' && user.email.toLowerCase().slice(0, searchLength) === normalizedSearchValue.slice(0, searchLength)));
     }
 
     if (filterOption.is_active) {
@@ -285,6 +312,93 @@ const CustomTable = ({ userData }) => {
     selectableMessage: (selectable) => (!selectable ? 'Not selectable' : undefined),
     onSelectionChange: onSelectionChange,
   };
+  const [isActiveChecked, setIsActiveChecked] = useState(false);
+  const [checkedEquity, setCheckedEquity] = useState(false);
+  const [checkedEquityOrder, setCheckedEquityOrder] = useState(false);
+  const [checkedFutureAnalysis, setCheckedFutureAnalysis] = useState(false);
+  const [checkedFutureOrder, setCheckedFutureOrder] = useState(false);
+  const [checkedMonthlyStatus, setCheckedMonthlyStatus] = useState(false);
+
+  const onChangeIsActive = (e) => {
+    setIsActiveChecked(e.target.checked);
+  };
+
+  const onChangeEquity = (e) => {
+    setCheckedEquity(e.target.checked);
+  };
+  const onChangeEquityOrder = (e) => {
+    setCheckedEquityOrder(e.target.checked);
+  };
+  const onChangeFutureAnalysis = (e) => {
+    setCheckedFutureAnalysis(e.target.checked);
+  };
+  const onChangeFutureOrder = (e) => {
+    setCheckedFutureOrder(e.target.checked);
+  };
+  const onChangeMonthlyStatus = (e) => {
+    setCheckedMonthlyStatus(e.target.checked);
+  };
+
+  function filterUserData(userDatas) {
+    return userDatas.map(user => ({
+      id: user.id,
+      is_active: isActiveChecked,
+      first_name: user.first_name,
+      blaze_product_permissions: user.blaze_product_permissions
+    }));
+  }
+
+
+  const handleApplyChanges = async() => {
+    // Prepare your data structure based on current state
+    const updatedPermissions = {
+      is_active: isActiveChecked,
+      blaze_product_permissions: {
+        is_equity_analysis: checkedEquity,
+        is_equity_orders: checkedEquityOrder,
+        is_fo_analysis: checkedFutureAnalysis,
+        is_fo_orders: checkedFutureOrder,
+        is_monthly_status: checkedMonthlyStatus
+      }
+    };
+
+    // Assuming you have a function to handle saving or applying these changes
+    // You can pass updatedPermissions to that function
+    console.log('Updated Permissions:', updatedPermissions);
+
+    const newData = selectedItems.map(obj => ({
+      ...obj,
+      "is_active": isActiveChecked,
+      "blaze_product_permissions": {
+        "is_equity_analysis": checkedEquity,
+        "is_equity_orders": checkedEquityOrder,
+        "is_fo_analysis": checkedFutureAnalysis,
+        "is_fo_orders": checkedFutureOrder,
+        "is_monthly_status": checkedMonthlyStatus
+      }
+    }));
+
+    const newfilterdata = filterUserData(newData)
+
+   
+    const res = await axios.patch(`${baseUrl}/user/profiles/update/multi/`,{ "users":newfilterdata}, { headers })
+    // Close the modal after applying changes
+    console.log("newDatanewDatanewData", newData,res)
+    if(res.status == 200){
+      const usersPromise = axios.get(`${baseUrl}/user/profiles/?paginate=false&?clear_cache=false`, { headers });
+      const [usersRes] = await Promise.all([
+        usersPromise
+      ]);
+
+      if (usersRes.status === 200) {
+         setUsersData(usersRes.data.data);
+        localStorage.setItem('donotCallApi', false);
+      } else {
+        throw new Error(`Failed to fetch users data. Status: ${usersRes.status}`);
+      }
+    }
+    AdminCloseModal();
+  };
 
   return (
     <>
@@ -321,6 +435,11 @@ const CustomTable = ({ userData }) => {
             isClearable={true}
             aria-label="Search by symbol"
           />
+        </EuiFlexItem>
+        <EuiFlexItem grow={false}>
+          <EuiButton onClick={AdminShowModal} iconType="popout">
+            Permissiions
+          </EuiButton>
         </EuiFlexItem>
         <EuiFlexItem grow={false}>
           <EuiButton onClick={showModal} iconType="filter">
@@ -368,6 +487,80 @@ const CustomTable = ({ userData }) => {
               </EuiButton>
               <EuiButton onClick={closeModal} fill>
                 Apply Filters
+              </EuiButton>
+            </EuiModalFooter>
+          </EuiModal>
+
+        </EuiOverlayMask>
+      )}
+
+      {adminPermissionModal && (
+        <EuiOverlayMask>
+          <EuiModal onClose={AdminCloseModal}>
+            <EuiModalHeader>
+              <EuiModalHeaderTitle>Permissions</EuiModalHeaderTitle>
+            </EuiModalHeader>
+            <EuiModalBody>
+              <EuiFlexGroup direction="column">
+                <EuiFlexItem>
+
+                  <EuiSwitch
+                    label="Is Active"
+                    checked={isActiveChecked}
+                    onChange={onChangeIsActive}
+                  />
+
+                </EuiFlexItem>
+                <EuiFlexItem>
+
+                  <EuiSwitch
+                    label="Equity Analysis"
+                    checked={checkedEquity}
+                    onChange={onChangeEquity}
+                  />
+
+                </EuiFlexItem>
+                <EuiFlexItem>
+
+                  <EuiSwitch
+                    label="Equity Order"
+                    checked={checkedEquityOrder}
+                    onChange={onChangeEquityOrder}
+                  />
+
+                </EuiFlexItem>
+                <EuiFlexItem>
+
+                  <EuiSwitch
+                    label="Future Analysis"
+                    checked={checkedFutureAnalysis}
+                    onChange={onChangeFutureAnalysis}
+                  />
+
+                </EuiFlexItem>
+                <EuiFlexItem>
+
+                  <EuiSwitch
+                    label="Future Order"
+                    checked={checkedFutureOrder}
+                    onChange={onChangeFutureOrder}
+                  />
+
+                </EuiFlexItem>
+                <EuiFlexItem>
+
+                  <EuiSwitch
+                    label="Monthly Status"
+                    checked={checkedMonthlyStatus}
+                    onChange={onChangeMonthlyStatus}
+                  />
+
+                </EuiFlexItem>
+              </EuiFlexGroup>
+            </EuiModalBody>
+            <EuiModalFooter>
+              <EuiButton onClick={handleApplyChanges} fill>
+                Apply
               </EuiButton>
             </EuiModalFooter>
           </EuiModal>

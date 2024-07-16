@@ -287,15 +287,17 @@ const FutureOrderDataGridTable = ({ orderData }) => {
             items.sort(Comparators.property(sortField, Comparators.default(sortDirection)));
         }
 
+
+
         if (searchValue) {
             const normalizedSearchValue = searchValue.trim().toLowerCase();
+            const searchLength = Math.min(normalizedSearchValue.length, 9);
             items = items.filter(
-                (user) =>
-                    user.name.toLowerCase() === normalizedSearchValue
-                //   ||
-                //   user.order_type.toLowerCase() === normalizedSearchValue
+                (user) => user.name.toLowerCase().slice(0, searchLength) === normalizedSearchValue.slice(0, searchLength)
+                
             );
         }
+
         items = filterByDateRange(items);
         if (filterOption.order_type) {
             items = items.filter((user) => user.order_type === filterOption.order_type);

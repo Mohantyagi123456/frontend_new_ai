@@ -270,8 +270,9 @@ const EquityDataGridTable = ({ userData }) => {
 
         if (searchValue) {
             const normalizedSearchValue = searchValue.trim().toLowerCase();
+            const searchLength = Math.min(normalizedSearchValue.length, 9);
             items = items.filter(
-                (user) => user.symbol.toLowerCase() === normalizedSearchValue
+                (user) => user.symbol.toLowerCase().slice(0, searchLength) === normalizedSearchValue.slice(0, searchLength)
             );
         }
 

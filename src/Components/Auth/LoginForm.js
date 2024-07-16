@@ -128,13 +128,13 @@ const LoginForm = () => {
           </EuiButton>
         </EuiForm>
         <EuiSpacer />
-        {isForgot && (
+        {/* {isForgot && ( */}
           <EuiText>
             <EuiLink onClick={handleForgotPassword}>
               Forgot Password?
             </EuiLink>
           </EuiText>
-        )}
+        {/* )} */}
         <EuiSpacer />
         <EuiText>
           Don't have an account?{' '}

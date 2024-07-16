@@ -249,10 +249,13 @@ const EquityOrderDataGridTable = ({ orderData }) => {
             items.sort(Comparators.property(sortField, Comparators.default(sortDirection)));
         }
 
+       
+
         if (searchValue) {
             const normalizedSearchValue = searchValue.trim().toLowerCase();
+            const searchLength = Math.min(normalizedSearchValue.length, 9);
             items = items.filter(
-                (user) => user.trading_symbol && user.trading_symbol.toLowerCase().includes(normalizedSearchValue)
+                (user) => user.trading_symbol.toLowerCase().slice(0, searchLength) === normalizedSearchValue.slice(0, searchLength)
             );
         }
 

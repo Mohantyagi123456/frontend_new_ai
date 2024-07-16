@@ -16,30 +16,37 @@ import bright_logo from '../assests/bright_logo.jpeg';
 const SignupForm = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    username: null,
-    first_name: null,
-    last_name: null,
-    email: null,
-    password: null,
+    username: '',
+    first_name: '',
+    last_name: '',
+    email: '',
+    password: '',
+    confirm_password: '',
     pan_card: null,
     aadhaar_card: null,
-    bio: "",
+    bio: '',
     contact: {
-      contact: null,
+      contact: '',
       is_active: true,
       is_permanent: true,
       is_verified: false,
     },
     address: {
-      house_num: null,
-      street: null,
-      city: null,
-      pincode: null,
+      house_num: '',
+      street: '',
+      city: '',
+      pincode: '',
       is_active: true,
       is_permanent: true,
       is_verified: false,
     },
   });
+
+  const [error, setError] = useState({
+    contact: '',
+    confirm_password: '',
+  });
+  const [isSubmitDisabled, setSubmitDisabled] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -47,17 +54,70 @@ const SignupForm = () => {
       ...prevData,
       [name]: value,
     }));
+
+    if (name === 'confirm_password') {
+      if (value !== formData.password) {
+        setError((prevError) => ({
+          ...prevError,
+          confirm_password: 'Passwords do not match',
+        }));
+        setSubmitDisabled(true);
+      } else {
+        setError((prevError) => ({
+          ...prevError,
+          confirm_password: '',
+        }));
+        setSubmitDisabled(false);
+      }
+    }
   };
 
   const handleNestedChange = (e, nestedObj, fieldName) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [nestedObj]: {
-        ...prevData[nestedObj],
-        [name]: fieldName ? { ...prevData[nestedObj][fieldName], [name]: parseInt(value) } : parseInt(value),
-      },
-    }));
+    if (nestedObj === 'contact' && name === 'contact') {
+      if (!/^\d*$/.test(value)) {
+        setError((prevError) => ({
+          ...prevError,
+          contact: 'Contact number must contain only digits',
+        }));
+        setSubmitDisabled(true);
+        return;
+      }
+
+      if (value.length > 10) {
+        return;
+      }
+
+      setFormData((prevData) => ({
+        ...prevData,
+        [nestedObj]: {
+          ...prevData[nestedObj],
+          [name]: fieldName ? { ...prevData[nestedObj][fieldName], [name]: value } : value,
+        },
+      }));
+
+      if (value.length !== 10) {
+        setError((prevError) => ({
+          ...prevError,
+          contact: 'Contact number must be exactly 10 digits',
+        }));
+        setSubmitDisabled(true);
+      } else {
+        setError((prevError) => ({
+          ...prevError,
+          contact: '',
+        }));
+        setSubmitDisabled(false);
+      }
+    } else {
+      setFormData((prevData) => ({
+        ...prevData,
+        [nestedObj]: {
+          ...prevData[nestedObj],
+          [name]: fieldName ? { ...prevData[nestedObj][fieldName], [name]: value } : value,
+        },
+      }));
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -90,7 +150,7 @@ const SignupForm = () => {
           <h4>Sign Up for an Account</h4>
         </EuiText>
         <EuiSpacer />
-        <div style={{ maxHeight: '60vh', overflowY: 'auto',  }}>
+        <div style={{ maxHeight: '60vh', overflowY: 'auto' }}>
           <EuiForm component="form" onSubmit={handleSubmit}>
             <EuiFormRow label="Username">
               <EuiFieldText name="username" value={formData.username} onChange={handleChange} />
@@ -107,47 +167,22 @@ const SignupForm = () => {
             <EuiFormRow label="Password">
               <EuiFieldText type="password" name="password" value={formData.password} onChange={handleChange} />
             </EuiFormRow>
-            {/* <EuiFormRow label="PAN Card">
-              <EuiFieldText name="pan_card" value={formData.pan_card} onChange={handleChange} />
+            <EuiFormRow label="Confirm Password" isInvalid={!!error.confirm_password} error={error.confirm_password}>
+              <EuiFieldText type="password" name="confirm_password" value={formData.confirm_password} onChange={handleChange} />
             </EuiFormRow>
-            <EuiFormRow label="Aadhaar Card">
-              <EuiFieldText name="aadhaar_card" value={formData.aadhaar_card} onChange={handleChange} />
-            </EuiFormRow>
-            <EuiFormRow label="Bio">
-              <EuiFieldText name="bio" value={formData.bio} onChange={handleChange} />
-            </EuiFormRow>
-            <EuiFormRow label="Contact Number">
+            <EuiFormRow label="Contact Number" isInvalid={!!error.contact} error={error.contact}>
               <EuiFieldText
                 name="contact"
                 value={formData.contact.contact}
                 onChange={(e) => handleNestedChange(e, 'contact')}
-              />
-            </EuiFormRow>
-            <EuiFormRow label="House Number">
-              <EuiFieldText
-                name="house_num"
-                value={formData.address.house_num}
-                onChange={(e) => handleNestedChange(e, 'address')}
-              />
-            </EuiFormRow>
-            <EuiFormRow label="Street">
-              <EuiFieldText name="street" value={formData.address.street} onChange={(e) => handleNestedChange(e, 'address')} />
-            </EuiFormRow>
-            <EuiFormRow label="City">
-              <EuiFieldText name="city" value={formData.address.city} onChange={(e) => handleNestedChange(e, 'address')} />
-            </EuiFormRow> */}
-            <EuiFormRow label="Contact Number">
-              <EuiFieldText
-                name="contact"
-                value={formData.contact.contact}
-                onChange={(e) => handleNestedChange(e, 'contact')}
+                inputProps={{ maxLength: 10 }}
               />
             </EuiFormRow>
             <EuiFormRow label="Pincode">
               <EuiFieldText name="pincode" value={formData.address.pincode} onChange={(e) => handleNestedChange(e, 'address')} />
             </EuiFormRow>
             <EuiSpacer />
-            <EuiButton type="submit" fill>
+            <EuiButton type="submit" fill isDisabled={isSubmitDisabled}>
               Sign Up
             </EuiButton>
           </EuiForm>
